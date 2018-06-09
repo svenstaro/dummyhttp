@@ -1,6 +1,6 @@
 # dummyhttp [![Build Status](https://travis-ci.com/svenstaro/dummyhttp.svg?branch=master)](https://travis-ci.com/svenstaro/dummyhttp) [![Crates.io](https://img.shields.io/crates/v/dummyhttp.svg)](https://crates.io/crates/dummyhttp) [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/svenstaro/dummyhttp/blob/master/LICENSE)
 
-**A super simple HTTP server that replies a fixed body with a fixed response code**
+**A super simple HTTP server that replies with a fixed body and a fixed response code**
 
 This is a simple, small, self-contained, cross-platform CLI tool for debugging
 and testing. It allows you to return arbitrary HTTP responses.
@@ -62,7 +62,7 @@ and testing. It allows you to return arbitrary HTTP responses.
 
     dummyhttp 0.1.0
     Sven-Hendrik Haase <svenstaro@gmail.com>
-    Super simple HTTP server that replies a fixed body with a fixed response code
+    Super simple HTTP server that replies with a fixed body and a fixed response code
 
     USAGE:
         dummyhttp [FLAGS] [OPTIONS]
