@@ -60,7 +60,7 @@ and testing. It allows you to return arbitrary HTTP responses.
 
 ## Full options
 
-    dummyhttp 0.1.0
+    dummyhttp 0.1.1
     Sven-Hendrik Haase <svenstaro@gmail.com>
     Super simple HTTP server that replies with a fixed body and a fixed response code
 
@@ -82,7 +82,7 @@ and testing. It allows you to return arbitrary HTTP responses.
 
 This is mostly a note for me on how to release this thing:
 
-- Update version in `Cargo.toml`.
+- Update version in `Cargo.toml` and `README.md`.
 - `git commit` and `git tag -s`, `git push`.
 - `cargo publish`
 - Releases will automatically be deployed by Travis.
