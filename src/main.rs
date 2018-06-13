@@ -1,31 +1,59 @@
 extern crate actix_web;
 extern crate simplelog;
-#[macro_use] extern crate clap;
+#[macro_use]
+extern crate clap;
 
-use actix_web::http::StatusCode;
-use actix_web::{Responder, server, App, middleware, HttpRequest, HttpResponse, Result};
-use simplelog::{TermLogger, LevelFilter, Config};
+use actix_web::http::{header, StatusCode};
+use actix_web::{middleware, server, App, HttpRequest, HttpResponse, Responder, Result};
+use simplelog::{Config, LevelFilter, TermLogger};
 use std::net::IpAddr;
 
 #[derive(Clone, Debug)]
 pub struct DummyhttpConfig {
     quiet: bool,
     port: u16,
+    headers: header::HeaderMap,
     code: u16,
     body: String,
     interface: IpAddr,
 }
 
 fn is_valid_port(port: String) -> Result<(), String> {
-    port.parse::<u16>().and(Ok(())).or_else(|e| Err(e.to_string()))
+    port.parse::<u16>()
+        .and(Ok(()))
+        .or_else(|e| Err(e.to_string()))
 }
 
 fn is_valid_status_code(code: String) -> Result<(), String> {
-    StatusCode::from_bytes(code.as_bytes()).and(Ok(())).or_else(|e| Err(e.to_string()))
+    StatusCode::from_bytes(code.as_bytes())
+        .and(Ok(()))
+        .or_else(|e| Err(e.to_string()))
 }
 
 fn is_valid_interface(interface: String) -> Result<(), String> {
-    interface.parse::<IpAddr>().and(Ok(())).or_else(|e| Err(e.to_string()))
+    interface
+        .parse::<IpAddr>()
+        .and(Ok(()))
+        .or_else(|e| Err(e.to_string()))
+}
+
+fn is_valid_header(header: String) -> Result<(), String> {
+    let header: Vec<&str> = header.split(":").collect();
+    if header.len() != 2 {
+        return Err("Wrong header format".to_string());
+    }
+
+    let (header_name, header_value) = (header[0], header[1]);
+
+    let hn = header::HeaderName::from_lowercase(header_name.to_lowercase().as_bytes())
+        .map(|_| ())
+        .map_err(|e| e.to_string());
+
+    let hv = header::HeaderValue::from_str(header_value)
+        .map(|_| ())
+        .map_err(|e| e.to_string());
+
+    hn.and(hv)
 }
 
 pub fn parse_args() -> DummyhttpConfig {
@@ -49,6 +77,16 @@ pub fn parse_args() -> DummyhttpConfig {
                 .validator(is_valid_port)
                 .required(false)
                 .default_value("8080")
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("header")
+                .short("h")
+                .long("header")
+                .help("Header to send (format: key:value)")
+                .validator(is_valid_header)
+                .required(false)
+                .multiple(true)
                 .takes_value(true),
         )
         .arg(
@@ -84,6 +122,22 @@ pub fn parse_args() -> DummyhttpConfig {
 
     let quiet = matches.is_present("quiet");
     let port = matches.value_of("port").unwrap().parse().unwrap();
+    let headers = if matches.is_present("header") {
+        let headers_raw = matches.values_of("header").unwrap();
+
+        let mut headers = header::HeaderMap::new();
+        for header in headers_raw {
+            let header_parts: Vec<String> = header.split(":").map(|x| x.to_string()).collect();
+            headers.append(
+                header::HeaderName::from_lowercase(header_parts[0].to_lowercase().as_bytes())
+                    .expect("Invalid header name"),
+                header_parts[1].parse().expect("Invalid header value"),
+            );
+        }
+        headers
+    } else {
+        header::HeaderMap::new()
+    };
     let code = matches.value_of("code").unwrap().parse().unwrap();
     let body = matches.value_of("body").unwrap().parse().unwrap();
     let interface = matches.value_of("interface").unwrap().parse().unwrap();
@@ -91,6 +145,7 @@ pub fn parse_args() -> DummyhttpConfig {
     DummyhttpConfig {
         quiet,
         port,
+        headers,
         code,
         body,
         interface,
@@ -99,7 +154,9 @@ pub fn parse_args() -> DummyhttpConfig {
 
 fn respond(req: HttpRequest<DummyhttpConfig>) -> impl Responder {
     let status_code = StatusCode::from_u16(req.state().code).unwrap();
-    HttpResponse::with_body(status_code, format!("{}\n", req.state().body))
+    let mut resp = HttpResponse::with_body(status_code, format!("{}\n", req.state().body));
+    resp.headers_mut().extend(req.state().headers.clone());
+    resp
 }
 
 fn main() {
@@ -110,12 +167,16 @@ fn main() {
     }
 
     let inside_config = dummyhttp_config.clone();
-	let server =server::new(
-		move || App::with_state(inside_config.clone())
+    let server = server::new(move || {
+        App::with_state(inside_config.clone())
             .middleware(middleware::Logger::default())
-            .default_resource(|r| r.f(respond)))
-		.bind(format!("{}:{}", &dummyhttp_config.interface, dummyhttp_config.port)).expect("Couldn't bind server")
-		.shutdown_timeout(0);
+            .default_resource(|r| r.f(respond))
+    }).bind(format!(
+        "{}:{}",
+        &dummyhttp_config.interface, dummyhttp_config.port
+    ))
+        .expect("Couldn't bind server")
+        .shutdown_timeout(0);
 
     server.run();
 }
