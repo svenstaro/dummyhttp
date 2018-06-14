@@ -38,7 +38,7 @@ fn is_valid_interface(interface: String) -> Result<(), String> {
 }
 
 fn is_valid_header(header: String) -> Result<(), String> {
-    let header: Vec<&str> = header.split(":").collect();
+    let header: Vec<&str> = header.split(':').collect();
     if header.len() != 2 {
         return Err("Wrong header format".to_string());
     }
@@ -81,7 +81,7 @@ pub fn parse_args() -> DummyhttpConfig {
         )
         .arg(
             Arg::with_name("header")
-                .short("h")
+                .short("H")
                 .long("header")
                 .help("Header to send (format: key:value)")
                 .validator(is_valid_header)
@@ -127,7 +127,7 @@ pub fn parse_args() -> DummyhttpConfig {
 
         let mut headers = header::HeaderMap::new();
         for header in headers_raw {
-            let header_parts: Vec<String> = header.split(":").map(|x| x.to_string()).collect();
+            let header_parts: Vec<String> = header.split(':').map(|x| x.to_string()).collect();
             headers.append(
                 header::HeaderName::from_lowercase(header_parts[0].to_lowercase().as_bytes())
                     .expect("Invalid header name"),
