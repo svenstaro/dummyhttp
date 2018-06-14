@@ -3,14 +3,21 @@ extern crate simplelog;
 #[macro_use]
 extern crate clap;
 
+#[macro_use]
+extern crate log;
+extern crate chrono;
+
 use actix_web::http::{header, StatusCode};
+use actix_web::middleware::{Finished, Middleware, Started};
 use actix_web::{middleware, server, App, HttpRequest, HttpResponse, Responder, Result};
+use chrono::prelude::*;
 use simplelog::{Config, LevelFilter, TermLogger};
 use std::net::IpAddr;
 
 #[derive(Clone, Debug)]
 pub struct DummyhttpConfig {
     quiet: bool,
+    verbose: bool,
     port: u16,
     headers: header::HeaderMap,
     code: u16,
@@ -67,7 +74,14 @@ pub fn parse_args() -> DummyhttpConfig {
             Arg::with_name("quiet")
                 .short("q")
                 .long("quiet")
-                .help("Be quiet"),
+                .help("Be quiet (log nothing)"),
+        )
+        .arg(
+            Arg::with_name("verbose")
+                .short("v")
+                .long("verbose")
+                .conflicts_with("quiet")
+                .help("Be verbose (log everything)"),
         )
         .arg(
             Arg::with_name("port")
@@ -121,6 +135,7 @@ pub fn parse_args() -> DummyhttpConfig {
         .get_matches();
 
     let quiet = matches.is_present("quiet");
+    let verbose = matches.is_present("verbose");
     let port = matches.value_of("port").unwrap().parse().unwrap();
     let headers = if matches.is_present("header") {
         let headers_raw = matches.values_of("header").unwrap();
@@ -144,6 +159,7 @@ pub fn parse_args() -> DummyhttpConfig {
 
     DummyhttpConfig {
         quiet,
+        verbose,
         port,
         headers,
         code,
@@ -159,6 +175,66 @@ fn respond(req: HttpRequest<DummyhttpConfig>) -> impl Responder {
     resp
 }
 
+fn configure_app(app: App<DummyhttpConfig>) -> App<DummyhttpConfig> {
+    if app.state().verbose {
+        app.middleware(VerboseLogger)
+    } else {
+        app.middleware(middleware::Logger::default())
+    }
+}
+
+struct VerboseLogger;
+struct StartTime(DateTime<Local>);
+
+impl<S> Middleware<S> for VerboseLogger {
+    fn start(&self, req: &mut HttpRequest<S>) -> Result<Started> {
+        req.extensions_mut().insert(StartTime(Local::now()));
+        Ok(Started::Done)
+    }
+
+    fn finish(&self, req: &mut HttpRequest<S>, _resp: &HttpResponse) -> Finished {
+        let remote = req.connection_info().remote().unwrap_or("unknown");
+        let entry_time = if let Some(entry_time) = req.extensions().get::<StartTime>() {
+            entry_time.0.format("[%d/%b/%Y:%H:%M:%S %z]").to_string()
+        } else {
+            "unknown time".to_string()
+        };
+        let method_path_line = if req.query_string().is_empty() {
+            format!("{} {} {:?}", req.method(), req.path(), req.version())
+        } else {
+            format!(
+                "{} {}?{} {:?}",
+                req.method(),
+                req.path(),
+                req.query_string(),
+                req.version()
+            )
+        };
+        let mut incoming_headers = String::new();
+        for (hk, hv) in req.clone().headers_mut() {
+            incoming_headers.push_str(&format!(
+                "> {}: {}\n",
+                hk.as_str(),
+                hv.to_str().unwrap_or("<unprintable>")
+            ));
+        }
+
+        let incoming_info = format!(
+            "> {method_path_line}\n{headers}",
+            method_path_line = method_path_line,
+            headers = incoming_headers
+        );
+
+        info!(
+            "Connection from {remote} at {entry_time}\n{incoming_info}",
+            remote = remote,
+            entry_time = entry_time,
+            incoming_info = incoming_info,
+        );
+        Finished::Done
+    }
+}
+
 fn main() {
     let dummyhttp_config = parse_args();
 
@@ -169,7 +245,7 @@ fn main() {
     let inside_config = dummyhttp_config.clone();
     let server = server::new(move || {
         App::with_state(inside_config.clone())
-            .middleware(middleware::Logger::default())
+            .configure(configure_app)
             .default_resource(|r| r.f(respond))
     }).bind(format!(
         "{}:{}",

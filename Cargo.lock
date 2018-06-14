@@ -358,7 +358,9 @@ name = "dummyhttp"
 version = "0.2.0"
 dependencies = [
  "actix-web 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "chrono 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 2.31.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "simplelog 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

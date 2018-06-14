@@ -20,3 +20,5 @@ lto = true
 clap = "2.29"
 actix-web = "0.6"
 simplelog = "0.5"
+log = "0.4"
+chrono = "0.4"
