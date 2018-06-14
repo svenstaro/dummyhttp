@@ -36,6 +36,17 @@ and testing. It allows you to return arbitrary HTTP responses.
     < date: Sat, 09 Jun 2018 13:58:57 GMT
     <
     Hello World
+    
+### Return a specific header
+
+    dummyhttp -b "Hello World" -H application/json
+    curl localhost:8080
+    < HTTP/1.1 200 OK
+    < content-length: 10
+    < content-type: application/json
+    < date: Thu, 14 Jun 2018 11:10:14 GMT
+    < 
+    Hello World
 
 ## How to install
 
