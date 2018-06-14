@@ -60,7 +60,7 @@ and testing. It allows you to return arbitrary HTTP responses.
 
 ## Full options
 
-    dummyhttp 0.1.1
+    dummyhttp 0.2.0
     Sven-Hendrik Haase <svenstaro@gmail.com>
     Super simple HTTP server that replies with a fixed body and a fixed response code
 
@@ -73,10 +73,11 @@ and testing. It allows you to return arbitrary HTTP responses.
         -V, --version    Prints version information
 
     OPTIONS:
-        -b, --body <body>       HTTP body to send [default: dummyhttp]
-        -c, --code <code>       HTTP status code to send [default: 200]
-        -i, --if <interface>    Interface to listen on [default: 0.0.0.0]
-        -p, --port <port>       Port to use [default: 8080]
+        -b, --body <body>           HTTP body to send [default: dummyhttp]
+        -c, --code <code>           HTTP status code to send [default: 200]
+        -H, --header <header>...    Header to send (format: key:value)
+        -i, --if <interface>        Interface to listen on [default: 0.0.0.0]
+        -p, --port <port>           Port to use [default: 8080]
 
 ## Releasing
 
