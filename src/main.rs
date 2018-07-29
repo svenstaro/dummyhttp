@@ -168,7 +168,7 @@ pub fn parse_args() -> DummyhttpConfig {
     }
 }
 
-fn respond(req: HttpRequest<DummyhttpConfig>) -> impl Responder {
+fn respond(req: &HttpRequest<DummyhttpConfig>) -> impl Responder {
     let status_code = StatusCode::from_u16(req.state().code).unwrap();
     let mut resp = HttpResponse::with_body(status_code, format!("{}\n", req.state().body));
     resp.headers_mut().extend(req.state().headers.clone());
@@ -187,13 +187,14 @@ struct VerboseLogger;
 struct StartTime(DateTime<Local>);
 
 impl<S> Middleware<S> for VerboseLogger {
-    fn start(&self, req: &mut HttpRequest<S>) -> Result<Started> {
+    fn start(&self, req: &HttpRequest<S>) -> Result<Started> {
         req.extensions_mut().insert(StartTime(Local::now()));
         Ok(Started::Done)
     }
 
-    fn finish(&self, req: &mut HttpRequest<S>, _resp: &HttpResponse) -> Finished {
-        let remote = req.connection_info().remote().unwrap_or("unknown");
+    fn finish(&self, req: &HttpRequest<S>, _resp: &HttpResponse) -> Finished {
+        let conn_info = req.connection_info();
+        let remote = conn_info.remote().unwrap_or("unknown");
         let entry_time = if let Some(entry_time) = req.extensions().get::<StartTime>() {
             entry_time.0.format("[%d/%b/%Y:%H:%M:%S %z]").to_string()
         } else {
@@ -211,7 +212,7 @@ impl<S> Middleware<S> for VerboseLogger {
             )
         };
         let mut incoming_headers = String::new();
-        for (hk, hv) in req.clone().headers_mut() {
+        for (hk, hv) in req.clone().headers() {
             incoming_headers.push_str(&format!(
                 "> {}: {}\n",
                 hk.as_str(),
