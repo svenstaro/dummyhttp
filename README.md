@@ -1,4 +1,4 @@
-# dummyhttp [![Build Status](https://travis-ci.com/svenstaro/dummyhttp.svg?branch=master)](https://travis-ci.com/svenstaro/dummyhttp) [![Crates.io](https://img.shields.io/crates/v/dummyhttp.svg)](https://crates.io/crates/dummyhttp) [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/svenstaro/dummyhttp/blob/master/LICENSE)
+# dummyhttp [![Build Status](https://travis-ci.com/svenstaro/dummyhttp.svg?branch=master)](https://travis-ci.com/svenstaro/dummyhttp) [![AUR](https://img.shields.io/aur/version/dummyhttp.svg)](https://aur.archlinux.org/packages/dummyhttp/) [![Crates.io](https://img.shields.io/crates/v/dummyhttp.svg)](https://crates.io/crates/dummyhttp) [![dependency status](https://deps.rs/repo/github/svenstaro/dummyhttp/status.svg)](https://deps.rs/repo/github/svenstaro/dummyhttp) [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/svenstaro/dummyhttp/blob/master/LICENSE)
 
 **A super simple HTTP server that replies with a fixed body and a fixed response code**
 
