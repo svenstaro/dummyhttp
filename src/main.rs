@@ -64,12 +64,13 @@ fn is_valid_header(header: String) -> Result<(), String> {
 }
 
 pub fn parse_args() -> DummyhttpConfig {
-    use clap::{App, Arg};
+    use clap::{App, Arg, AppSettings};
 
     let matches = App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!())
         .about(crate_description!())
+        .global_setting(AppSettings::ColoredHelp)
         .arg(
             Arg::with_name("quiet")
                 .short("q")
