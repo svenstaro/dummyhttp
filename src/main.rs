@@ -1,16 +1,10 @@
-extern crate actix_web;
-extern crate simplelog;
-#[macro_use]
-extern crate clap;
-
-#[macro_use]
-extern crate log;
-extern crate chrono;
-
 use actix_web::http::{header, StatusCode};
 use actix_web::middleware::{Finished, Middleware, Started};
-use actix_web::{middleware, server, App, HttpRequest, HttpResponse, Responder, Result};
+use actix_web::App as ActixApp;
+use actix_web::{middleware, server, HttpRequest, HttpResponse, Responder, Result};
 use chrono::prelude::*;
+use clap::{crate_authors, crate_description, crate_name, crate_version, App, AppSettings, Arg};
+use log::info;
 use simplelog::{Config, LevelFilter, TermLogger};
 use std::net::IpAddr;
 
@@ -64,8 +58,6 @@ fn is_valid_header(header: String) -> Result<(), String> {
 }
 
 pub fn parse_args() -> DummyhttpConfig {
-    use clap::{App, Arg, AppSettings};
-
     let matches = App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!())
@@ -176,7 +168,7 @@ fn respond(req: &HttpRequest<DummyhttpConfig>) -> impl Responder {
     resp
 }
 
-fn configure_app(app: App<DummyhttpConfig>) -> App<DummyhttpConfig> {
+fn configure_app(app: ActixApp<DummyhttpConfig>) -> ActixApp<DummyhttpConfig> {
     if app.state().verbose {
         app.middleware(VerboseLogger)
     } else {
@@ -246,15 +238,16 @@ fn main() {
 
     let inside_config = dummyhttp_config.clone();
     let server = server::new(move || {
-        App::with_state(inside_config.clone())
+        ActixApp::with_state(inside_config.clone())
             .configure(configure_app)
             .default_resource(|r| r.f(respond))
-    }).bind(format!(
+    })
+    .bind(format!(
         "{}:{}",
         &dummyhttp_config.interface, dummyhttp_config.port
     ))
-        .expect("Couldn't bind server")
-        .shutdown_timeout(0);
+    .expect("Couldn't bind server")
+    .shutdown_timeout(0);
 
     server.run();
 }
