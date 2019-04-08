@@ -18,7 +18,7 @@ maintenance = { status = "actively-developed" }
 lto = true
 
 [dependencies]
-clap = "2.29"
+clap = "2.33"
 actix-web = "0.7"
 simplelog = "0.5"
 log = "0.4"
