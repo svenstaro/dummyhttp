@@ -5,7 +5,7 @@ use actix_web::{middleware, server, HttpRequest, HttpResponse, Responder, Result
 use chrono::prelude::*;
 use clap::{crate_authors, crate_description, crate_name, crate_version, App, AppSettings, Arg};
 use log::info;
-use simplelog::{Config, LevelFilter, TermLogger};
+use simplelog::{Config, LevelFilter, TermLogger, TerminalMode};
 use std::net::IpAddr;
 
 #[derive(Clone, Debug)]
@@ -233,7 +233,7 @@ fn main() {
     let dummyhttp_config = parse_args();
 
     if !dummyhttp_config.quiet {
-        let _ = TermLogger::init(LevelFilter::Info, Config::default());
+        let _ = TermLogger::init(LevelFilter::Info, Config::default(), TerminalMode::default());
     }
 
     let inside_config = dummyhttp_config.clone();
