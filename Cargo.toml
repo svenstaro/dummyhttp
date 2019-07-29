@@ -19,7 +19,7 @@ lto = true
 
 [dependencies]
 clap = "2.33"
-actix-web = "0.7"
+actix-web = "1.0"
 simplelog = "0.6"
 log = "0.4"
 chrono = "0.4"
