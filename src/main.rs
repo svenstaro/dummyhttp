@@ -173,13 +173,6 @@ fn default_response(data: web::Data<DummyhttpConfig>) -> HttpResponse {
 }
 
 struct StartTime(DateTime<Local>);
-//     fn call(&mut self, req: ServiceRequest) -> Self::Future {
-//
-//         Box::new(self.service.call(req).and_then(|res| {
-//             Ok(res)
-//         }))
-//     }
-// }
 
 fn main() -> Result<(), std::io::Error> {
     let dummyhttp_config = parse_args();
