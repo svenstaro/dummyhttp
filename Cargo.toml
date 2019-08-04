@@ -26,6 +26,3 @@ simplelog = "0.6"
 log = "0.4"
 futures = "0.1.25"
 chrono = "0.4"
-
-[patch.crates-io]
-actix-http = { git = "https://github.com/actix/actix-web" }
