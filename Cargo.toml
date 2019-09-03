@@ -16,9 +16,12 @@ maintenance = { status = "actively-developed" }
 
 [profile.release]
 lto = true
+opt-level = 'z'
+codegen-units = 1
+panic = 'abort'
 
 [dependencies]
-structopt = "0.2"
+structopt = "0.3"
 actix-web = "1.0"
 actix-service = "0.4"
 actix-http = "0.2"

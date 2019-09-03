@@ -17,7 +17,9 @@ use structopt::StructOpt;
 #[derive(Debug, Clone, StructOpt)]
 #[structopt(
     name = "dummyhttp",
-    raw(global_settings = "&[structopt::clap::AppSettings::ColoredHelp]")
+    author,
+    about,
+    global_settings = &[structopt::clap::AppSettings::ColoredHelp]
 )]
 pub struct DummyhttpConfig {
     /// Be quiet (log nothing)
@@ -33,7 +35,7 @@ pub struct DummyhttpConfig {
     port: u16,
 
     /// Headers to send (format: key:value)
-    #[structopt(short, long, parse(try_from_str = "parse_header"))]
+    #[structopt(short, long, parse(try_from_str = parse_header))]
     headers: Vec<HeaderMap>,
 
     /// HTTP status code to send
@@ -48,8 +50,8 @@ pub struct DummyhttpConfig {
     #[structopt(
         short = "i",
         long = "interfaces",
-        parse(try_from_str = "parse_interface"),
-        raw(number_of_values = "1"),
+        parse(try_from_str = parse_interface),
+        number_of_values = 1,
         default_value = "0.0.0.0"
     )]
     interfaces: Vec<IpAddr>,
