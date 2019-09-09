@@ -9,10 +9,53 @@ use actix_web::HttpServer;
 use chrono::prelude::*;
 use futures::Future;
 use log::info;
+use rustls::internal::pemfile::{certs, rsa_private_keys};
+use rustls::{NoClientAuth, ServerConfig};
 use simplelog::{Config, LevelFilter, TermLogger, TerminalMode};
+use std::fs::File;
+use std::io::BufReader;
+use std::io::Error as IoError;
+use std::io::ErrorKind as IoErrorKind;
 use std::io::{Error, ErrorKind};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::path::PathBuf;
 use structopt::StructOpt;
+
+fn load_certs(filename: &PathBuf) -> std::io::Result<Vec<rustls::Certificate>> {
+    let certfile = File::open(filename)?;
+    let mut reader = BufReader::new(certfile);
+    certs(&mut reader)
+        .map_err(|_| IoError::new(IoErrorKind::Other, "File contains an invalid certificate"))
+}
+
+fn load_private_key(filename: &PathBuf) -> std::io::Result<rustls::PrivateKey> {
+    let rsa_keys = {
+        let keyfile = File::open(filename)?;
+        let mut reader = BufReader::new(keyfile);
+        rsa_private_keys(&mut reader).map_err(|_| {
+            IoError::new(IoErrorKind::Other, "File contains invalid RSA private key")
+        })?
+    };
+
+    let pkcs8_keys = {
+        let keyfile = File::open(filename)?;
+        let mut reader = BufReader::new(keyfile);
+        rustls::internal::pemfile::pkcs8_private_keys(&mut reader).map_err(|_| {
+            IoError::new(
+                IoErrorKind::Other,
+                "File contains invalid pkcs8 private key (encrypted keys not supported)",
+            )
+        })?
+    };
+
+    // prefer to load pkcs8 keys
+    if !pkcs8_keys.is_empty() {
+        Ok(pkcs8_keys[0].clone())
+    } else {
+        assert!(!rsa_keys.is_empty());
+        Ok(rsa_keys[0].clone())
+    }
+}
 
 #[derive(Debug, Clone, StructOpt)]
 #[structopt(
@@ -55,6 +98,14 @@ pub struct DummyhttpConfig {
         default_value = "0.0.0.0"
     )]
     interfaces: Vec<IpAddr>,
+
+    /// TLS cert to use
+    #[structopt(long = "cert", requires = "tls-key")]
+    tls_cert: Option<PathBuf>,
+
+    /// TLS key to use
+    #[structopt(long = "key", requires = "tls-cert")]
+    tls_key: Option<PathBuf>,
 }
 
 /// Checks wether an interface is valid, i.e. it can be parsed into an IP address
@@ -62,6 +113,9 @@ fn parse_interface(src: &str) -> Result<IpAddr, std::net::AddrParseError> {
     src.parse::<IpAddr>()
 }
 
+/// Parse a header given in a string format into a `HeaderMap`
+///
+/// Headers are expected to be in format "key:value".
 fn parse_header(header: &str) -> Result<HeaderMap, String> {
     let header: Vec<&str> = header.split(':').collect();
     if header.len() != 2 {
@@ -80,6 +134,7 @@ fn parse_header(header: &str) -> Result<HeaderMap, String> {
     Ok(map)
 }
 
+/// dummyhttp only has a single response and this is it :)
 fn default_response(data: web::Data<DummyhttpConfig>) -> HttpResponse {
     let status_code = StatusCode::from_u16(data.code).unwrap();
     let mut resp = HttpResponse::with_body(status_code, format!("{}\n", data.body).into());
@@ -98,10 +153,10 @@ fn default_response(data: web::Data<DummyhttpConfig>) -> HttpResponse {
 
 struct StartTime(DateTime<Local>);
 
-fn main() -> Result<(), std::io::Error> {
-    let dummyhttp_config = DummyhttpConfig::from_args();
+fn main() -> std::io::Result<()> {
+    let args = DummyhttpConfig::from_args();
 
-    if !dummyhttp_config.quiet {
+    if !args.quiet {
         let _ = TermLogger::init(
             LevelFilter::Info,
             Config::default(),
@@ -109,7 +164,7 @@ fn main() -> Result<(), std::io::Error> {
         );
     }
 
-    let interfaces = dummyhttp_config
+    let interfaces = args
         .interfaces
         .iter()
         .map(|&interface| {
@@ -132,15 +187,15 @@ fn main() -> Result<(), std::io::Error> {
             format!(
                 "{interface}:{port}",
                 interface = &interface,
-                port = dummyhttp_config.port,
+                port = args.port,
             )
             .parse::<SocketAddr>()
         })
         .collect::<Result<Vec<SocketAddr>, _>>()
         .map_err(|e| Error::new(ErrorKind::Other, e))?;
 
-    let dummyhttp_config_cloned = dummyhttp_config.clone();
-    let server = HttpServer::new(move || {
+    let dummyhttp_config_cloned = args.clone();
+    let mut server = HttpServer::new(move || {
         ActixApp::new()
             .data(dummyhttp_config_cloned.clone())
             .wrap_fn(|req, srv| {
@@ -195,10 +250,21 @@ fn main() -> Result<(), std::io::Error> {
                 })
             })
             .default_service(web::route().to(default_response))
-    })
-    .bind(socket_addresses.as_slice())
-    .expect("Couldn't bind server")
-    .shutdown_timeout(0);
+    });
+    // TODO: This conditional is kinda dirty but it'll have to do until we have stable if let chains.
+    if args.tls_cert.is_some() && args.tls_key.is_some() {
+        let tls_cert = args.tls_cert.unwrap();
+        let tls_key = args.tls_key.unwrap();
 
-    server.run()
+        let mut config = ServerConfig::new(NoClientAuth::new());
+        let cert_file = load_certs(&tls_cert)?;
+        let key_file = load_private_key(&tls_key)?;
+        config
+            .set_single_cert(cert_file, key_file)
+            .map_err(|e| IoError::new(IoErrorKind::Other, e.to_string()))?;
+        server = server.bind_rustls(socket_addresses.as_slice(), config)?;
+    } else {
+        server = server.bind(socket_addresses.as_slice())?;
+    }
+    server.system_exit().run()
 }
