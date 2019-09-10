@@ -1,13 +1,17 @@
-use actix_http::httpmessage::HttpMessage;
-use actix_service::Service;
+use actix_service::{Service, Transform};
+use actix_web::error::PayloadError;
 use actix_web::http::header::HeaderMap;
 use actix_web::http::{header, StatusCode};
 use actix_web::web::{self};
 use actix_web::App as ActixApp;
-use actix_web::HttpResponse;
-use actix_web::HttpServer;
+use actix_web::HttpMessage;
+use actix_web::{dev::ServiceRequest, dev::ServiceResponse, Error};
+use actix_web::{HttpResponse, HttpServer};
+use bytes::BytesMut;
 use chrono::prelude::*;
-use futures::Future;
+use futures::future::{ok, FutureResult};
+use futures::stream::Stream;
+use futures::{Future, Poll};
 use log::info;
 use rustls::internal::pemfile::{certs, rsa_private_keys};
 use rustls::{NoClientAuth, ServerConfig};
@@ -16,7 +20,6 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
-use std::io::{Error, ErrorKind};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -153,6 +156,106 @@ fn default_response(data: web::Data<DummyhttpConfig>) -> HttpResponse {
 
 struct StartTime(DateTime<Local>);
 
+pub struct Logging;
+
+impl<S, B> Transform<S> for Logging
+where
+    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S::Future: 'static,
+    B: 'static,
+{
+    type Request = ServiceRequest;
+    type Response = ServiceResponse<B>;
+    type Error = Error;
+    type InitError = ();
+    type Transform = LoggingMiddleware<S>;
+    type Future = FutureResult<Self::Transform, Self::InitError>;
+
+    fn new_transform(&self, service: S) -> Self::Future {
+        ok(LoggingMiddleware { service })
+    }
+}
+
+pub struct LoggingMiddleware<S> {
+    service: S,
+}
+
+impl<S, B> Service for LoggingMiddleware<S>
+where
+    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S::Future: 'static,
+    B: 'static,
+{
+    type Request = ServiceRequest;
+    type Response = ServiceResponse<B>;
+    type Error = Error;
+    type Future = Box<dyn Future<Item = Self::Response, Error = Self::Error>>;
+
+    fn poll_ready(&mut self) -> Poll<(), Self::Error> {
+        self.service.poll_ready()
+    }
+
+    fn call(&mut self, req: ServiceRequest) -> Self::Future {
+        req.extensions_mut().insert(StartTime(Local::now()));
+
+        Box::new(self.service.call(req).and_then(|res| {
+            let req_ = res.request();
+            let app_state: &DummyhttpConfig = req_.app_data().expect("There should be data here");
+            if app_state.verbose {
+                req_.take_payload()
+                    .fold(BytesMut::new(), move |mut body, chunk| {
+                        body.extend_from_slice(&chunk);
+                        Ok::<_, PayloadError>(body)
+                    });
+                    .and_then(|bytes| {
+                        info!("request body: {:?}", bytes);
+                    });
+                let conn_info = req_.connection_info();
+                let remote = conn_info.remote().unwrap_or("unknown");
+                let entry_time = if let Some(entry_time) = req_.extensions().get::<StartTime>() {
+                    entry_time.0.format("[%d/%b/%Y:%H:%M:%S %z]").to_string()
+                } else {
+                    "unknown time".to_string()
+                };
+                let method_path_line = if req_.query_string().is_empty() {
+                    format!("{} {} {:?}", req_.method(), req_.path(), req_.version())
+                } else {
+                    format!(
+                        "{} {}?{} {:?}",
+                        req_.method(),
+                        req_.path(),
+                        req_.query_string(),
+                        req_.version()
+                    )
+                };
+                let mut incoming_headers = String::new();
+                for (hk, hv) in req_.headers() {
+                    incoming_headers.push_str(&format!(
+                        "> {}: {}\n",
+                        hk.as_str(),
+                        hv.to_str().unwrap_or("<unprintable>")
+                    ));
+                }
+
+                let incoming_info = format!(
+                    "> {method_path_line}\n{headers}",
+                    method_path_line = method_path_line,
+                    headers = incoming_headers
+                );
+
+                info!(
+                    "Connection from {remote} at {entry_time}\n{incoming_info}",
+                    remote = remote,
+                    entry_time = entry_time,
+                    incoming_info = incoming_info,
+                );
+            }
+            println!("Hi from response");
+            Ok(res)
+        }))
+    }
+}
+
 fn main() -> std::io::Result<()> {
     let args = DummyhttpConfig::from_args();
 
@@ -192,63 +295,13 @@ fn main() -> std::io::Result<()> {
             .parse::<SocketAddr>()
         })
         .collect::<Result<Vec<SocketAddr>, _>>()
-        .map_err(|e| Error::new(ErrorKind::Other, e))?;
+        .map_err(|e| IoError::new(IoErrorKind::Other, e))?;
 
     let dummyhttp_config_cloned = args.clone();
     let mut server = HttpServer::new(move || {
         ActixApp::new()
             .data(dummyhttp_config_cloned.clone())
-            .wrap_fn(|req, srv| {
-                req.extensions_mut().insert(StartTime(Local::now()));
-                srv.call(req).map(|res| {
-                    let req_ = res.request();
-                    let app_state: &DummyhttpConfig =
-                        req_.app_data().expect("There should be data here");
-                    if app_state.verbose {
-                        let conn_info = req_.connection_info();
-                        let remote = conn_info.remote().unwrap_or("unknown");
-                        let entry_time =
-                            if let Some(entry_time) = req_.extensions().get::<StartTime>() {
-                                entry_time.0.format("[%d/%b/%Y:%H:%M:%S %z]").to_string()
-                            } else {
-                                "unknown time".to_string()
-                            };
-                        let method_path_line = if req_.query_string().is_empty() {
-                            format!("{} {} {:?}", req_.method(), req_.path(), req_.version())
-                        } else {
-                            format!(
-                                "{} {}?{} {:?}",
-                                req_.method(),
-                                req_.path(),
-                                req_.query_string(),
-                                req_.version()
-                            )
-                        };
-                        let mut incoming_headers = String::new();
-                        for (hk, hv) in req_.headers() {
-                            incoming_headers.push_str(&format!(
-                                "> {}: {}\n",
-                                hk.as_str(),
-                                hv.to_str().unwrap_or("<unprintable>")
-                            ));
-                        }
-
-                        let incoming_info = format!(
-                            "> {method_path_line}\n{headers}",
-                            method_path_line = method_path_line,
-                            headers = incoming_headers
-                        );
-
-                        info!(
-                            "Connection from {remote} at {entry_time}\n{incoming_info}",
-                            remote = remote,
-                            entry_time = entry_time,
-                            incoming_info = incoming_info,
-                        );
-                    }
-                    res
-                })
-            })
+            .wrap(Logging)
             .default_service(web::route().to(default_response))
     });
     // TODO: This conditional is kinda dirty but it'll have to do until we have stable if let chains.
