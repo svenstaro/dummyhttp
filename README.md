@@ -9,9 +9,23 @@
 **A super simple HTTP server that replies with a fixed body and a fixed response code**
 
 This is a simple, small, self-contained, cross-platform CLI tool for debugging
-and testing. It allows you to return arbitrary HTTP responses.
+and testing. It allows you to return arbitrary HTTP responses and log incoming request data.
 
 ## How to use
+
+### Log all incoming request data
+
+    dummyhttp --verbose
+    curl -X POST localhost:8080 -d hi
+    # ┌─Incoming request
+    # │ POST / HTTP/1.1
+    # │ Accept: */*
+    # │ Content-Length: 2
+    # │ Host: localhost:8080
+    # │ User-Agent: curl/7.66.0
+    # │ Content-Type: application/x-www-form-urlencoded
+    # │ Body:
+    # hi
 
 ### Running with no arguments always returns 200 on all interfaces at port 8080
 
@@ -37,22 +51,22 @@ and testing. It allows you to return arbitrary HTTP responses.
 
     dummyhttp -b "Hello World"
     curl localhost:8080
-    < HTTP/1.1 200 OK
-    < content-length: 12
-    < date: Sat, 09 Jun 2018 13:58:57 GMT
-    <
-    Hello World
+    # < HTTP/1.1 200 OK
+    # < content-length: 12
+    # < date: Sat, 09 Jun 2018 13:58:57 GMT
+    # <
+    # Hello World
 
 ### Return a specific header
 
     dummyhttp -b "Hello World" -H application/json
     curl localhost:8080
-    < HTTP/1.1 200 OK
-    < content-length: 10
-    < content-type: application/json
-    < date: Thu, 14 Jun 2018 11:10:14 GMT
-    <
-    Hello World
+    # < HTTP/1.1 200 OK
+    # < content-length: 10
+    # < content-type: application/json
+    # < date: Thu, 14 Jun 2018 11:10:14 GMT
+    # <
+    # Hello World
 
 ## How to install
 
@@ -77,7 +91,7 @@ and testing. It allows you to return arbitrary HTTP responses.
 
 ## Full options
 
-    dummyhttp 0.2.1
+    dummyhttp 0.3.0
     Sven-Hendrik Haase <svenstaro@gmail.com>
     Super simple HTTP server that replies with a fixed body and a fixed response code
 
@@ -85,17 +99,19 @@ and testing. It allows you to return arbitrary HTTP responses.
         dummyhttp [FLAGS] [OPTIONS]
 
     FLAGS:
-        -h, --help       Prints help information
+            --help       Prints help information
         -q, --quiet      Be quiet (log nothing)
         -V, --version    Prints version information
-        -v, --verbose    Be verbose (log everything)
+        -v, --verbose    Be verbose (log data of incoming and outgoing requests)
 
     OPTIONS:
-        -b, --body <body>           HTTP body to send [default: dummyhttp]
-        -c, --code <code>           HTTP status code to send [default: 200]
-        -H, --header <header>...    Header to send (format: key:value)
-        -i, --if <interface>        Interface to listen on [default: 0.0.0.0]
-        -p, --port <port>           Port to use [default: 8080]
+        -b, --body <body>                   HTTP body to send [default: dummyhttp]
+        -c, --code <code>                   HTTP status code to send [default: 200]
+        -h, --headers <headers>...          Headers to send (format: key:value)
+        -i, --interfaces <interfaces>...    Interface to bind to [default: 0.0.0.0]
+        -p, --port <port>                   Port on which to listen [default: 8080]
+            --cert <tls-cert>               TLS cert to use
+            --key <tls-key>                 TLS key to use
 
 ## Releasing
 
