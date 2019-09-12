@@ -1,6 +1,6 @@
 # dummyhttp
 
-[![Build Status](https://travis-ci.com/svenstaro/dummyhttp.svg?branch=master)](https://travis-ci.com/svenstaro/dummyhttp)
+[![GitHub Actions Workflow](https://github.com/svenstaro/dummyhttp/workflows/Build/badge.svg)](https://github.com/svenstaro/dummyhttp/actions)
 [![AUR](https://img.shields.io/aur/version/dummyhttp.svg)](https://aur.archlinux.org/packages/dummyhttp/)
 [![Crates.io](https://img.shields.io/crates/v/dummyhttp.svg)](https://crates.io/crates/dummyhttp)
 [![dependency status](https://deps.rs/repo/github/svenstaro/dummyhttp/status.svg)](https://deps.rs/repo/github/svenstaro/dummyhttp)
