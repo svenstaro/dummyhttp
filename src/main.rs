@@ -34,27 +34,13 @@ fn default_response(data: web::Data<DummyhttpConfig>) -> HttpResponse {
     let status_code = StatusCode::from_u16(data.code).unwrap();
     let mut resp = HttpResponse::with_body(status_code, format!("{}\n", data.body).into());
 
-    let mut outgoing_headers = String::new();
     let mut headers = header::HeaderMap::new();
     for header in &data.headers {
         // There should only be a single Header in each HeaderMap that we parsed from the command
         // line arguments.
         let val = header.iter().next().unwrap();
         headers.insert(val.0.clone(), val.1.clone());
-
-        outgoing_headers.push_str(&format!(
-            "{deco} {key}: {value}\n",
-            deco = Paint::red("│").bold(),
-            key = Inflector::to_train_case(val.0.as_str()),
-            value = val.1.to_str().unwrap_or("<unprintable>")
-        ));
     }
-
-    println!(
-        "{response}{headers}",
-        response = Paint::red("┌─Outgoing request").bold(),
-        headers = outgoing_headers
-    );
 
     *resp.headers_mut() = headers;
     resp
