@@ -117,7 +117,8 @@ and testing. It allows you to return arbitrary HTTP responses and log incoming r
 
 This is mostly a note for me on how to release this thing:
 
-- Update version in `Cargo.toml` and `README.md`.
-- `git commit` and `git tag -s`, `git push`.
-- `cargo publish`
-- Releases will automatically be deployed by Travis.
+- Update version in `Cargo.toml` and `README.md`
+- `git commit` and `git tag -s`, `git push`
+- Run `cargo publish`
+- Releases will automatically be deployed by GitHub Actions
+- Update AUR package
