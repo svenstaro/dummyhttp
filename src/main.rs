@@ -1,6 +1,5 @@
 use actix_service::{Service, Transform};
 use actix_web::error::PayloadError;
-use actix_web::http::header::HeaderMap;
 use actix_web::http::{header, StatusCode};
 use actix_web::web::{self};
 use actix_web::App as ActixApp;
@@ -12,143 +11,50 @@ use chrono::prelude::*;
 use futures::future::{ok, FutureResult};
 use futures::stream::Stream;
 use futures::{Future, Poll};
+use inflector::Inflector;
 use log::info;
-use rustls::internal::pemfile::{certs, rsa_private_keys};
 use rustls::{NoClientAuth, ServerConfig};
 use simplelog::{Config, LevelFilter, TermLogger, TerminalMode};
-use std::fs::File;
-use std::io::BufReader;
+use std::cell::RefCell;
 use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-use std::path::PathBuf;
+use std::rc::Rc;
 use structopt::StructOpt;
+use yansi::Paint;
 
-fn load_certs(filename: &PathBuf) -> std::io::Result<Vec<rustls::Certificate>> {
-    let certfile = File::open(filename)?;
-    let mut reader = BufReader::new(certfile);
-    certs(&mut reader)
-        .map_err(|_| IoError::new(IoErrorKind::Other, "File contains an invalid certificate"))
-}
+use crate::args::DummyhttpConfig;
+use crate::tls_util::{load_cert, load_private_key};
 
-fn load_private_key(filename: &PathBuf) -> std::io::Result<rustls::PrivateKey> {
-    let rsa_keys = {
-        let keyfile = File::open(filename)?;
-        let mut reader = BufReader::new(keyfile);
-        rsa_private_keys(&mut reader).map_err(|_| {
-            IoError::new(IoErrorKind::Other, "File contains invalid RSA private key")
-        })?
-    };
-
-    let pkcs8_keys = {
-        let keyfile = File::open(filename)?;
-        let mut reader = BufReader::new(keyfile);
-        rustls::internal::pemfile::pkcs8_private_keys(&mut reader).map_err(|_| {
-            IoError::new(
-                IoErrorKind::Other,
-                "File contains invalid pkcs8 private key (encrypted keys not supported)",
-            )
-        })?
-    };
-
-    // prefer to load pkcs8 keys
-    if !pkcs8_keys.is_empty() {
-        Ok(pkcs8_keys[0].clone())
-    } else {
-        assert!(!rsa_keys.is_empty());
-        Ok(rsa_keys[0].clone())
-    }
-}
-
-#[derive(Debug, Clone, StructOpt)]
-#[structopt(
-    name = "dummyhttp",
-    author,
-    about,
-    global_settings = &[structopt::clap::AppSettings::ColoredHelp]
-)]
-pub struct DummyhttpConfig {
-    /// Be quiet (log nothing)
-    #[structopt(short, long)]
-    quiet: bool,
-
-    /// Be verbose (log data of incoming and outgoing requests)
-    #[structopt(short, long)]
-    verbose: bool,
-
-    /// Port on which to listen
-    #[structopt(short, long, default_value = "8080")]
-    port: u16,
-
-    /// Headers to send (format: key:value)
-    #[structopt(short, long, parse(try_from_str = parse_header))]
-    headers: Vec<HeaderMap>,
-
-    /// HTTP status code to send
-    #[structopt(short, long, default_value = "200")]
-    code: u16,
-
-    /// HTTP body to send
-    #[structopt(short, long, default_value = "dummyhttp")]
-    body: String,
-
-    /// Interface to bind to
-    #[structopt(
-        short = "i",
-        long = "interfaces",
-        parse(try_from_str = parse_interface),
-        number_of_values = 1,
-        default_value = "0.0.0.0"
-    )]
-    interfaces: Vec<IpAddr>,
-
-    /// TLS cert to use
-    #[structopt(long = "cert", requires = "tls-key")]
-    tls_cert: Option<PathBuf>,
-
-    /// TLS key to use
-    #[structopt(long = "key", requires = "tls-cert")]
-    tls_key: Option<PathBuf>,
-}
-
-/// Checks wether an interface is valid, i.e. it can be parsed into an IP address
-fn parse_interface(src: &str) -> Result<IpAddr, std::net::AddrParseError> {
-    src.parse::<IpAddr>()
-}
-
-/// Parse a header given in a string format into a `HeaderMap`
-///
-/// Headers are expected to be in format "key:value".
-fn parse_header(header: &str) -> Result<HeaderMap, String> {
-    let header: Vec<&str> = header.split(':').collect();
-    if header.len() != 2 {
-        return Err("Wrong header format".to_string());
-    }
-
-    let (header_name, header_value) = (header[0], header[1]);
-
-    let hn = header::HeaderName::from_lowercase(header_name.to_lowercase().as_bytes())
-        .map_err(|e| e.to_string())?;
-
-    let hv = header::HeaderValue::from_str(header_value).map_err(|e| e.to_string())?;
-
-    let mut map = HeaderMap::new();
-    map.insert(hn, hv);
-    Ok(map)
-}
+mod args;
+mod tls_util;
 
 /// dummyhttp only has a single response and this is it :)
 fn default_response(data: web::Data<DummyhttpConfig>) -> HttpResponse {
     let status_code = StatusCode::from_u16(data.code).unwrap();
     let mut resp = HttpResponse::with_body(status_code, format!("{}\n", data.body).into());
 
+    let mut outgoing_headers = String::new();
     let mut headers = header::HeaderMap::new();
     for header in &data.headers {
         // There should only be a single Header in each HeaderMap that we parsed from the command
         // line arguments.
         let val = header.iter().next().unwrap();
         headers.insert(val.0.clone(), val.1.clone());
+
+        outgoing_headers.push_str(&format!(
+            "{deco} {key}: {value}\n",
+            deco = Paint::red("│").bold(),
+            key = Inflector::to_train_case(val.0.as_str()),
+            value = val.1.to_str().unwrap_or("<unprintable>")
+        ));
     }
+
+    println!(
+        "{response}{headers}",
+        response = Paint::red("┌─Outgoing request").bold(),
+        headers = outgoing_headers
+    );
 
     *resp.headers_mut() = headers;
     resp
@@ -160,7 +66,7 @@ pub struct Logging;
 
 impl<S, B> Transform<S> for Logging
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     S::Future: 'static,
     B: 'static,
 {
@@ -172,17 +78,19 @@ where
     type Future = FutureResult<Self::Transform, Self::InitError>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ok(LoggingMiddleware { service })
+        ok(LoggingMiddleware {
+            service: Rc::new(RefCell::new(service)),
+        })
     }
 }
 
 pub struct LoggingMiddleware<S> {
-    service: S,
+    service: Rc<RefCell<S>>,
 }
 
 impl<S, B> Service for LoggingMiddleware<S>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     S::Future: 'static,
     B: 'static,
 {
@@ -195,64 +103,95 @@ where
         self.service.poll_ready()
     }
 
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
+    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
         req.extensions_mut().insert(StartTime(Local::now()));
+        let mut svc = self.service.clone();
 
-        Box::new(self.service.call(req).and_then(|res| {
-            let req_ = res.request();
-            let app_state: &DummyhttpConfig = req_.app_data().expect("There should be data here");
-            if app_state.verbose {
-                req_.take_payload()
-                    .fold(BytesMut::new(), move |mut body, chunk| {
-                        body.extend_from_slice(&chunk);
-                        Ok::<_, PayloadError>(body)
-                    });
-                    .and_then(|bytes| {
-                        info!("request body: {:?}", bytes);
-                    });
-                let conn_info = req_.connection_info();
-                let remote = conn_info.remote().unwrap_or("unknown");
-                let entry_time = if let Some(entry_time) = req_.extensions().get::<StartTime>() {
-                    entry_time.0.format("[%d/%b/%Y:%H:%M:%S %z]").to_string()
-                } else {
-                    "unknown time".to_string()
-                };
-                let method_path_line = if req_.query_string().is_empty() {
-                    format!("{} {} {:?}", req_.method(), req_.path(), req_.version())
-                } else {
-                    format!(
-                        "{} {}?{} {:?}",
-                        req_.method(),
-                        req_.path(),
-                        req_.query_string(),
-                        req_.version()
-                    )
-                };
-                let mut incoming_headers = String::new();
-                for (hk, hv) in req_.headers() {
-                    incoming_headers.push_str(&format!(
-                        "> {}: {}\n",
-                        hk.as_str(),
-                        hv.to_str().unwrap_or("<unprintable>")
-                    ));
-                }
+        Box::new(
+            req.take_payload()
+                .fold(BytesMut::new(), move |mut body, chunk| {
+                    body.extend_from_slice(&chunk);
+                    Ok::<_, PayloadError>(body)
+                })
+                .map_err(|e| e.into())
+                .and_then(move |bytes| {
+                    svc.call(req).and_then(move |res| {
+                        let req_ = res.request();
+                        let app_state: &DummyhttpConfig =
+                            req_.app_data().expect("There should be data here");
 
-                let incoming_info = format!(
-                    "> {method_path_line}\n{headers}",
-                    method_path_line = method_path_line,
-                    headers = incoming_headers
-                );
+                        let conn_info = req_.connection_info().clone();
+                        let remote = conn_info.remote().unwrap_or("unknown");
+                        let entry_time =
+                            if let Some(entry_time) = req_.extensions().get::<StartTime>() {
+                                entry_time.0.format("[%d/%b/%Y:%H:%M:%S %z]").to_string()
+                            } else {
+                                "unknown time".to_string()
+                            };
+                        if app_state.verbose {
+                            let method_path_line = if req_.query_string().is_empty() {
+                                format!("{method} {path} {version:?}",
+                                    method = req_.method(),
+                                    path = req_.path(),
+                                    version = req_.version(),
+                                )
+                            } else {
+                                format!(
+                                    "{method} {path}?{query} {version:?}",
+                                    method = req_.method(),
+                                    path = req_.path(),
+                                    query = req_.query_string(),
+                                    version = req_.version(),
+                                )
+                            };
+                            let mut incoming_headers = String::new();
+                            for (hk, hv) in req_.headers() {
+                                incoming_headers.push_str(&format!(
+                                    "{deco} {key}: {value}\n",
+                                    deco = Paint::green("│").bold(),
+                                    key = Inflector::to_train_case(hk.as_str()),
+                                    value = hv.to_str().unwrap_or("<unprintable>")
+                                ));
+                            }
 
-                info!(
-                    "Connection from {remote} at {entry_time}\n{incoming_info}",
-                    remote = remote,
-                    entry_time = entry_time,
-                    incoming_info = incoming_info,
-                );
-            }
-            println!("Hi from response");
-            Ok(res)
-        }))
+                            let incoming_info = format!(
+                                "{deco} {method_path_line}\n{headers}",
+                                deco = Paint::green("│").bold(),
+                                method_path_line = method_path_line,
+                                headers = incoming_headers
+                            );
+
+                            let body = String::from_utf8_lossy(&bytes);
+                            if body.is_empty() {
+                                info!(
+                                    "Connection from {remote} at {entry_time}\n{incoming_info}",
+                                    remote = remote,
+                                    entry_time = entry_time,
+                                    incoming_info = incoming_info,
+                                );
+                            } else {
+                                info!(
+                                    "Connection from {remote} at {entry_time}\n{request}\n{incoming_info}{deco} Body:\n{body}",
+                                    request = Paint::green("┌─Incoming request").bold(),
+                                    remote = remote,
+                                    entry_time = entry_time,
+                                    incoming_info = incoming_info,
+                                    deco = Paint::green("│").bold(),
+                                    body = body,
+                                );
+                            }
+                        } else {
+                            info!(
+                                "Connection from {remote} at {entry_time}",
+                                remote = remote,
+                                entry_time = entry_time,
+                            );
+                        }
+
+                        Ok(res)
+                    })
+                }),
+        )
     }
 }
 
@@ -310,7 +249,7 @@ fn main() -> std::io::Result<()> {
         let tls_key = args.tls_key.unwrap();
 
         let mut config = ServerConfig::new(NoClientAuth::new());
-        let cert_file = load_certs(&tls_cert)?;
+        let cert_file = load_cert(&tls_cert)?;
         let key_file = load_private_key(&tls_key)?;
         config
             .set_single_cert(cert_file, key_file)
