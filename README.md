@@ -92,7 +92,7 @@ and testing. It allows you to return arbitrary HTTP responses and log incoming r
 
 ## Full options
 
-    dummyhttp 0.3.0
+    dummyhttp 0.3.1
     Sven-Hendrik Haase <svenstaro@gmail.com>
     Super simple HTTP server that replies with a fixed body and a fixed response code
 
