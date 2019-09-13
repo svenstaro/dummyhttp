@@ -150,7 +150,8 @@ where
                             let body = String::from_utf8_lossy(&bytes);
                             if body.is_empty() {
                                 info!(
-                                    "Connection from {remote} at {entry_time}\n{incoming_info}",
+                                    "Connection from {remote} at {entry_time}\n{request}\n{incoming_info}",
+                                    request = Paint::green("┌─Incoming request").bold(),
                                     remote = remote,
                                     entry_time = entry_time,
                                     incoming_info = incoming_info,
