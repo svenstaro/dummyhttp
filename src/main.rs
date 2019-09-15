@@ -7,6 +7,7 @@ use actix_web::{dev::ServiceRequest, dev::ServiceResponse, Error};
 use actix_web::{HttpMessage, HttpResponse, HttpServer};
 use bytes::BytesMut;
 use chrono::prelude::*;
+use colored_json::prelude::*;
 use futures::future::{ok, FutureResult};
 use futures::stream::Stream;
 use futures::{Future, Poll};
@@ -154,15 +155,9 @@ where
                             } else {
                                 let body_formatted = if let Some(content_type) = req_.headers().get(header::CONTENT_TYPE) {
                                     if content_type == header::HeaderValue::from_static("application/json") {
-                                        if let Ok(loaded_json) = serde_json::from_str::<serde_json::Value>(&body) {
-                                            if let Ok(pretty_json) = serde_json::to_string_pretty(&loaded_json) {
-                                                pretty_json
-                                            } else {
-                                                body.to_string()
-                                            }
-                                        } else {
-                                            body.to_string()
-                                        }
+                                        serde_json::from_str::<serde_json::Value>(&body)
+                                            .and_then(|loaded_json| serde_json::to_string_pretty(&loaded_json))
+                                            .and_then(|pretty_json| pretty_json.to_colored_json_auto())?
                                     } else {
                                         body.to_string()
                                     }
@@ -205,6 +200,11 @@ where
 }
 
 fn main() -> std::io::Result<()> {
+    #[cfg(windows)]
+    Paint::enable_windows_ascii();
+    #[cfg(windows)]
+    colored_json::enable_ansi_support();
+
     let args = DummyhttpConfig::from_args();
 
     if !args.quiet {
