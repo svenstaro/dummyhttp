@@ -3,9 +3,8 @@ use actix_web::error::PayloadError;
 use actix_web::http::{header, StatusCode};
 use actix_web::web::{self};
 use actix_web::App as ActixApp;
-use actix_web::HttpMessage;
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse, Error};
-use actix_web::{HttpResponse, HttpServer};
+use actix_web::{HttpMessage, HttpResponse, HttpServer};
 use bytes::BytesMut;
 use chrono::prelude::*;
 use futures::future::{ok, FutureResult};
@@ -115,58 +114,81 @@ where
                                 "unknown time".to_string()
                             };
                         if app_state.verbose {
-                            let method_path_line = if req_.query_string().is_empty() {
-                                format!("{method} {path} {version:?}",
-                                    method = req_.method(),
-                                    path = req_.path(),
-                                    version = req_.version(),
-                                )
+                            let path_query = if req_.query_string().is_empty() {
+                                req_.path().to_string()
                             } else {
-                                format!(
-                                    "{method} {path}?{query} {version:?}",
-                                    method = req_.method(),
+                                format!("{path}?{query}",
                                     path = req_.path(),
                                     query = req_.query_string(),
-                                    version = req_.version(),
                                 )
                             };
-                            let mut incoming_headers = String::new();
+                            let method_path_version_line = format!("{method} {path_query} {http}/{version}",
+                                method = Paint::green(req_.method()),
+                                path_query = Paint::cyan(path_query).underline(),
+                                http = Paint::blue("HTTP"),
+                                version = Paint::blue(format!("{:?}", req_.version()).split("/").skip(1).next().unwrap_or("unknown")),
+                            );
+
+                            let mut incoming_headers_vec = vec![];
                             for (hk, hv) in req_.headers() {
-                                incoming_headers.push_str(&format!(
-                                    "{deco} {key}: {value}\n",
+                                incoming_headers_vec.push(format!(
+                                    "{deco} {key}: {value}",
                                     deco = Paint::green("│").bold(),
-                                    key = Inflector::to_train_case(hk.as_str()),
+                                    key = Paint::cyan(Inflector::to_train_case(hk.as_str())),
                                     value = hv.to_str().unwrap_or("<unprintable>")
                                 ));
                             }
+                            incoming_headers_vec.sort();
+                            let incoming_headers = incoming_headers_vec.join("\n");
 
                             let incoming_info = format!(
                                 "{deco} {method_path_line}\n{headers}",
                                 deco = Paint::green("│").bold(),
-                                method_path_line = method_path_line,
+                                method_path_line = method_path_version_line,
                                 headers = incoming_headers
                             );
 
                             let body = String::from_utf8_lossy(&bytes);
-                            if body.is_empty() {
-                                info!(
-                                    "Connection from {remote} at {entry_time}\n{request}\n{incoming_info}",
-                                    request = Paint::green("┌─Incoming request").bold(),
-                                    remote = remote,
-                                    entry_time = entry_time,
-                                    incoming_info = incoming_info,
-                                );
+                            let body_text = if body.is_empty() {
+                                "".to_string()
                             } else {
-                                info!(
-                                    "Connection from {remote} at {entry_time}\n{request}\n{incoming_info}{deco} Body:\n{body}",
-                                    request = Paint::green("┌─Incoming request").bold(),
-                                    remote = remote,
-                                    entry_time = entry_time,
-                                    incoming_info = incoming_info,
+                                let body_formatted = if let Some(content_type) = req_.headers().get(header::CONTENT_TYPE) {
+                                    if content_type == header::HeaderValue::from_static("application/json") {
+                                        if let Ok(loaded_json) = serde_json::from_str::<serde_json::Value>(&body) {
+                                            if let Ok(pretty_json) = serde_json::to_string_pretty(&loaded_json) {
+                                                pretty_json
+                                            } else {
+                                                body.to_string()
+                                            }
+                                        } else {
+                                            body.to_string()
+                                        }
+                                    } else {
+                                        body.to_string()
+                                    }
+                                } else {
+                                    body.to_string()
+                                };
+                                let body_formatted = body_formatted
+                                    .lines()
+                                    .map(|line| format!("{deco} {line}", deco = Paint::green("│").bold(), line = line))
+                                    .collect::<Vec<_>>()
+                                    .join("\n");
+                                format!(
+                                    "\n{deco} {body}\n{body_formatted}",
                                     deco = Paint::green("│").bold(),
-                                    body = body,
-                                );
-                            }
+                                    body = Paint::yellow("Body:"),
+                                    body_formatted = body_formatted,
+                                )
+                            };
+                            info!(
+                                "Connection from {remote} at {entry_time}\n{request}\n{incoming_info}{body_text}",
+                                request = Paint::green("┌─Incoming request").bold(),
+                                remote = remote,
+                                entry_time = entry_time,
+                                incoming_info = incoming_info,
+                                body_text = body_text,
+                            );
                         } else {
                             info!(
                                 "Connection from {remote} at {entry_time}",
