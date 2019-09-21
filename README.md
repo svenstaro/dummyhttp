@@ -76,14 +76,14 @@ and testing. It allows you to return arbitrary HTTP responses and log incoming r
     chmod +x dummyhttp-linux-amd64
     ./dummyhttp-linux-amd64
 
-**On OSX**: Download `dummyhttp-osx-amd64` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
+**On macOS**: Download `dummyhttp-macos-amd64` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
 
-    chmod +x dummyhttp-osx-amd64
-    ./dummyhttp-osx-amd64
+    chmod +x dummyhttp-macos-amd64
+    ./dummyhttp-macos-amd64
 
-**On Windows**: Download `dummyhttp-win-amd64.exe` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
+**On Windows**: Download `dummyhttp-windows-amd64.exe` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
 
-    dummyhttp-win-amd64.exe
+    dummyhttp-windows-amd64.exe
 
 **With Cargo**: If you have a somewhat recent version of Rust and Cargo installed, you can run
 
@@ -121,5 +121,5 @@ This is mostly a note for me on how to release this thing:
 - Update version in `Cargo.toml` and `README.md`
 - `git commit` and `git tag -s`, `git push`
 - Run `cargo publish`
-- Releases will automatically be deployed by GitHub Actions
+- Releases will be built and deployed automatically by GitHub Actions
 - Update AUR package
