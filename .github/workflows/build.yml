@@ -22,7 +22,5 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build
       run: cargo build --verbose
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v1
     - name: Run tests
       run: cargo test --verbose

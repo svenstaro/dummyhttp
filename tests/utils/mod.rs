@@ -16,7 +16,9 @@ pub struct DummyhttpProcess {
 
 impl Drop for DummyhttpProcess {
     fn drop(&mut self) {
-        self.child.kill().expect("Couldn't kill child")
+        if let Err(e) = self.child.kill() {
+            eprintln!("WARN: {}", e);
+        }
     }
 }
 
