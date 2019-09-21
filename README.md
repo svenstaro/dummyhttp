@@ -71,19 +71,19 @@ and testing. It allows you to return arbitrary HTTP responses and log incoming r
 
 ## How to install
 
-**On Linux**: Download `dummyhttp-linux` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
+**On Linux**: Download `dummyhttp-linux-amd64` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
 
-    chmod +x dummyhttp-linux
-    ./dummyhttp-linux
+    chmod +x dummyhttp-linux-amd64
+    ./dummyhttp-linux-amd64
 
-**On OSX**: Download `dummyhttp-osx` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
+**On OSX**: Download `dummyhttp-osx-amd64` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
 
-    chmod +x dummyhttp-osx
-    ./dummyhttp-osx
+    chmod +x dummyhttp-osx-amd64
+    ./dummyhttp-osx-amd64
 
-**On Windows**: Download `dummyhttp-win.exe` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
+**On Windows**: Download `dummyhttp-win-amd64.exe` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
 
-    dummyhttp-win.exe
+    dummyhttp-win-amd64.exe
 
 **With Cargo**: If you have a somewhat recent version of Rust and Cargo installed, you can run
 
@@ -92,7 +92,7 @@ and testing. It allows you to return arbitrary HTTP responses and log incoming r
 
 ## Full options
 
-    dummyhttp 0.3.1
+    dummyhttp 0.4.0
     Sven-Hendrik Haase <svenstaro@gmail.com>
     Super simple HTTP server that replies with a fixed body and a fixed response code
 
