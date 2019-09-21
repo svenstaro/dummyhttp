@@ -127,7 +127,7 @@ where
                                 method = Paint::green(req_.method()),
                                 path_query = Paint::cyan(path_query).underline(),
                                 http = Paint::blue("HTTP"),
-                                version = Paint::blue(format!("{:?}", req_.version()).split("/").skip(1).next().unwrap_or("unknown")),
+                                version = Paint::blue(format!("{:?}", req_.version()).split('/').nth(1).unwrap_or("unknown")),
                             );
 
                             let mut incoming_headers_vec = vec![];
@@ -182,9 +182,8 @@ where
                                 http = Paint::blue("HTTP"),
                                 version = Paint::blue(
                                     format!("{:?}", res.response().head().version)
-                                    .split("/")
-                                    .skip(1)
-                                    .next()
+                                    .split('/')
+                                    .nth(1)
                                     .unwrap_or("unknown")
                                 ),
                                 status_code = Paint::blue(res.status().as_u16()),
