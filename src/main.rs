@@ -142,7 +142,7 @@ where
                             incoming_headers_vec.sort();
                             let incoming_headers = incoming_headers_vec.join("\n");
 
-                            let incoming_info = format!(
+                            let req_info = format!(
                                 "{deco} {method_path_line}\n{headers}",
                                 deco = Paint::green("│").bold(),
                                 method_path_line = method_path_version_line,
@@ -150,7 +150,7 @@ where
                             );
 
                             let body = String::from_utf8_lossy(&bytes);
-                            let body_text = if body.is_empty() {
+                            let body_text_req = if body.is_empty() {
                                 "".to_string()
                             } else {
                                 let body_formatted = if let Some(content_type) = req_.headers().get(header::CONTENT_TYPE) {
@@ -176,13 +176,52 @@ where
                                     body_formatted = body_formatted,
                                 )
                             };
+
+                            let status_line = format!(
+                                "{http}/{version} {status_code} {status_text}",
+                                http = Paint::blue("HTTP"),
+                                version = Paint::blue(
+                                    format!("{:?}", res.response().head().version)
+                                    .split("/")
+                                    .skip(1)
+                                    .next()
+                                    .unwrap_or("unknown")
+                                ),
+                                status_code = Paint::blue(res.status().as_u16()),
+                                status_text = Paint::cyan(
+                                    res.status().canonical_reason().unwrap_or("")
+                                ),
+                            );
+
+                            let mut outgoing_headers_vec = vec![];
+                            for (hk, hv) in res.headers() {
+                                outgoing_headers_vec.push(format!(
+                                        "{deco} {key}: {value}",
+                                        deco = Paint::red("│").bold(),
+                                        key =
+                                        Paint::cyan(Inflector::to_train_case(hk.as_str())),
+                                        value = hv.to_str().unwrap_or("<unprintable>")
+                                ));
+                            }
+                            outgoing_headers_vec.sort();
+                            let outgoing_headers = outgoing_headers_vec.join("\n");
+
+                            let res_info = format!(
+                                "{deco} {status_line}\n{headers}",
+                                deco = Paint::red("│").bold(),
+                                status_line = status_line,
+                                headers = outgoing_headers
+                            );
+
                             info!(
-                                "Connection from {remote} at {entry_time}\n{request}\n{incoming_info}{body_text}",
-                                request = Paint::green("┌─Incoming request").bold(),
+                                "Connection from {remote} at {entry_time}\n{req_banner}\n{req_info}{body_text_req}\n{res_banner}\n{res_info}",
+                                req_banner = Paint::green("┌─Incoming request").bold(),
                                 remote = remote,
                                 entry_time = entry_time,
-                                incoming_info = incoming_info,
-                                body_text = body_text,
+                                req_info = req_info,
+                                body_text_req = body_text_req,
+                                res_banner = Paint::red("┌─Outgoing response").bold(),
+                                res_info = res_info,
                             );
                         } else {
                             info!(
