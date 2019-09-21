@@ -16,7 +16,7 @@ pub struct DummyhttpProcess {
 
 impl Drop for DummyhttpProcess {
     fn drop(&mut self) {
-        self.child.kill().unwrap()
+        self.child.kill().expect("Couldn't kill child")
     }
 }
 
