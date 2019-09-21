@@ -44,6 +44,7 @@ fn has_some_output_by_default() -> Result<(), Error> {
         .unwrap()
         .read_to_string(&mut output)?;
 
+    dbg!(&output);
     assert!(output.find("Starting server").is_some());
     assert!(output.find("Connection from").is_some());
 
