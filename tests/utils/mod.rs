@@ -38,7 +38,7 @@ impl DummyhttpProcess {
             .arg("-p")
             .arg(&port)
             .args(args.clone())
-            .stdout(Stdio::piped())
+            // .stdout(Stdio::piped())
             .spawn()?;
 
         // This isn't a great way of making sure that Dummyhttp is ready to serve connections
