@@ -23,4 +23,5 @@ jobs:
     - name: Build
       run: cargo build --all
     - name: Run tests
-      run: bash -c "cargo test"
+      run: cargo test
+      shell: bash
