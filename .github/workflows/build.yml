@@ -24,4 +24,4 @@ jobs:
       run: cargo build --all
     - name: Run tests
       run: cargo test
-      shell: sh
+      shell: bash {0}
