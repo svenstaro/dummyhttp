@@ -18,7 +18,7 @@ use simplelog::{Config, LevelFilter, TermLogger, TerminalMode};
 use std::cell::RefCell;
 use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
-use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::net::SocketAddr;
 use std::rc::Rc;
 use structopt::StructOpt;
 use yansi::Paint;
@@ -257,12 +257,9 @@ fn main() -> std::io::Result<()> {
         .interfaces
         .iter()
         .map(|&interface| {
-            if interface == IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)) {
-                // If the interface is 0.0.0.0, we'll change it to 127.0.0.1 so that clicking the link will
-                // also work on Windows. Why can't Windows interpret 0.0.0.0?
-                "127.0.0.1".to_string()
-            } else if interface.is_ipv6() {
-                // If the interface is IPv6 then we'll print it with brackets so that it is clickable.
+            if interface.is_ipv6() {
+                // If the interface is IPv6 then we'll print it with brackets so that it is
+                // clickable and also because for some reason, actix-web won't it otherwise.
                 format!("[{}]", interface)
             } else {
                 format!("{}", interface)
