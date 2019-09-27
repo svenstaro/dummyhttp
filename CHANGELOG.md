@@ -2,6 +2,7 @@
 
 - Add really sweet colors (#30)
 - Add integration tests (#26)
+- Fallback to basic log output in case we don't have a terminal attached
 
 # 0.3.1 (released on 2019-09-13)
 

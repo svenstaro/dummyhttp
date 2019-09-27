@@ -14,7 +14,6 @@ use futures::{Future, Poll};
 use inflector::Inflector;
 use log::info;
 use rustls::{NoClientAuth, ServerConfig};
-use simplelog::{Config, LevelFilter, TermLogger, TerminalMode};
 use std::cell::RefCell;
 use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
@@ -245,12 +244,19 @@ fn main() -> std::io::Result<()> {
 
     let args = DummyhttpConfig::from_args();
 
-    if !args.quiet {
-        let _ = TermLogger::init(
-            LevelFilter::Info,
-            Config::default(),
-            TerminalMode::default(),
-        );
+    let log_level = if args.quiet {
+        simplelog::LevelFilter::Error
+    } else {
+        simplelog::LevelFilter::Info
+    };
+
+    if let Err(_) = simplelog::TermLogger::init(
+        log_level,
+        simplelog::Config::default(),
+        simplelog::TerminalMode::Mixed,
+    ) {
+        simplelog::SimpleLogger::init(log_level, simplelog::Config::default())
+            .expect("Couldn't initialize logger")
     }
 
     let interfaces = args
