@@ -1,4 +1,4 @@
-# 0.4.0 (unreleased)
+# 0.4.0 (released on 2019-10-01)
 
 - Add really sweet colors (#30)
 - Add integration tests (#26)
