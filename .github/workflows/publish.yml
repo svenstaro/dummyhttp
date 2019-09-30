@@ -30,8 +30,7 @@ jobs:
       with:
         rust-version: stable
     - uses: actions/checkout@v1
-    - name: Build
-      run: cargo build --release --locked
+    - run: cargo build --release --locked
     - uses: svenstaro/upx-action@v1-release
       with:
         file: target/release/${{ matrix.artifact_name }}
