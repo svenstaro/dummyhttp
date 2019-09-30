@@ -250,11 +250,13 @@ fn main() -> std::io::Result<()> {
         simplelog::LevelFilter::Info
     };
 
-    if let Err(_) = simplelog::TermLogger::init(
+    if simplelog::TermLogger::init(
         log_level,
         simplelog::Config::default(),
         simplelog::TerminalMode::Mixed,
-    ) {
+    )
+    .is_err()
+    {
         simplelog::SimpleLogger::init(log_level, simplelog::Config::default())
             .expect("Couldn't initialize logger")
     }
