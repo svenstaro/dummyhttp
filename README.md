@@ -28,6 +28,10 @@ and testing. It allows you to return arbitrary HTTP responses and log incoming r
     # │ Body:
     # hi
 
+Example with color:
+
+![Pretty log](pretty_log.png)
+
 ### Running with no arguments always returns 200 on all interfaces at port 8080
 
     dummyhttp
