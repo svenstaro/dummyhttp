@@ -17,13 +17,13 @@ jobs:
         include:
           - os: ubuntu-latest
             artifact_name: dummyhttp
-            release_name: dummyhttp-linux-amd64
+            release_name: linux-amd64
           - os: windows-latest
             artifact_name: dummyhttp.exe
-            release_name: dummyhttp-windows-amd64.exe
+            release_name: windows-amd64.exe
           - os: macos-latest
             artifact_name: dummyhttp
-            release_name: dummyhttp-macos-amd64
+            release_name: macos-amd64
 
     steps:
     - uses: hecrj/setup-rust-action@master
@@ -34,10 +34,16 @@ jobs:
     - uses: svenstaro/upx-action@v1-release
       with:
         file: target/release/${{ matrix.artifact_name }}
+    - name: Get tag name
+      id: tag_name
+      run: |
+        echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/release/${{ matrix.artifact_name }}
-        asset_name: ${{ matrix.release_name }}
+        asset_name: dummyhttp-${{ SOURCE_TAG }}-${{ matrix.release_name }}
         tag: ${{ github.ref }}
+      env:
+        SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
