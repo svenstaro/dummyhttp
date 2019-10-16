@@ -10,7 +10,9 @@
 **A super simple HTTP server that replies with a fixed body and a fixed response code**
 
 This is a simple, small, self-contained, cross-platform CLI tool for debugging
-and testing. It allows you to return arbitrary HTTP responses and log incoming request data.
+and testing.
+It allows you to return arbitrary HTTP responses and log incoming request data.
+HTTP/2 support included.
 
 ## How to use
 
