@@ -141,15 +141,8 @@ where
                             incoming_headers_vec.sort();
                             let incoming_headers = incoming_headers_vec.join("\n");
 
-                            let req_info = format!(
-                                "{deco} {method_path_line}\n{headers}",
-                                deco = Paint::green("│").bold(),
-                                method_path_line = method_path_version_line,
-                                headers = incoming_headers
-                            );
-
                             let body = String::from_utf8_lossy(&bytes);
-                            let body_text_req = if body.is_empty() {
+                            let req_body_text = if body.is_empty() {
                                 "".to_string()
                             } else {
                                 let body_formatted = if let Some(content_type) = req_.headers().get(header::CONTENT_TYPE) {
@@ -175,6 +168,14 @@ where
                                     body_formatted = body_formatted,
                                 )
                             };
+
+                            let req_info = format!(
+                                "{deco} {method_path_line}\n{headers}{req_body_text}",
+                                deco = Paint::green("│").bold(),
+                                method_path_line = method_path_version_line,
+                                headers = incoming_headers,
+                                req_body_text = req_body_text,
+                            );
 
                             let status_line = format!(
                                 "{http}/{version} {status_code} {status_text}",
@@ -204,20 +205,36 @@ where
                             outgoing_headers_vec.sort();
                             let outgoing_headers = outgoing_headers_vec.join("\n");
 
+                            let res_body_text = if app_state.body.is_empty() {
+                                "".to_string()
+                            } else {
+                                let body_formatted = app_state.body
+                                    .lines()
+                                    .map(|line| format!("{deco} {line}", deco = Paint::red("│").bold(), line = line))
+                                    .collect::<Vec<_>>()
+                                    .join("\n");
+                                format!(
+                                    "\n{deco} {body}\n{body_formatted}",
+                                    deco = Paint::red("│").bold(),
+                                    body = Paint::yellow("Body:"),
+                                    body_formatted = body_formatted,
+                                )
+                            };
+
                             let res_info = format!(
-                                "{deco} {status_line}\n{headers}",
+                                "{deco} {status_line}\n{headers}{res_body_text}",
                                 deco = Paint::red("│").bold(),
                                 status_line = status_line,
-                                headers = outgoing_headers
+                                headers = outgoing_headers,
+                                res_body_text = res_body_text,
                             );
 
                             info!(
-                                "Connection from {remote} at {entry_time}\n{req_banner}\n{req_info}{body_text_req}\n{res_banner}\n{res_info}",
+                                "Connection from {remote} at {entry_time}\n{req_banner}\n{req_info}\n{res_banner}\n{res_info}",
                                 req_banner = Paint::green("┌─Incoming request").bold(),
                                 remote = remote,
                                 entry_time = entry_time,
                                 req_info = req_info,
-                                body_text_req = body_text_req,
                                 res_banner = Paint::red("┌─Outgoing response").bold(),
                                 res_info = res_info,
                             );
