@@ -43,7 +43,5 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/release/${{ matrix.artifact_name }}
-        asset_name: dummyhttp-${{ SOURCE_TAG }}-${{ matrix.release_name }}
+        asset_name: dummyhttp-${{ steps.tag_name.outputs.SOURCE_TAG }}-${{ matrix.release_name }}
         tag: ${{ github.ref }}
-      env:
-        SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
