@@ -1,3 +1,7 @@
+# 0.4.1 (released on 2019-10-14)
+
+- Print sent body
+
 # 0.4.0 (released on 2019-10-01)
 
 - Add really sweet colors (#30)
