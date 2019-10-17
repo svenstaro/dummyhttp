@@ -1,6 +1,8 @@
 mod utils;
 
+use assert_cmd::prelude::*;
 use http::StatusCode;
+use std::process::Command;
 use utils::{DummyhttpProcess, Error};
 
 /// We can connect to a secured connection.
@@ -20,6 +22,18 @@ fn tls_works() -> Result<(), Error> {
 
     assert_eq!(resp.text()?, "dummyhttp\n");
     assert_eq!(resp.status(), StatusCode::OK);
+
+    Ok(())
+}
+
+/// Wrong paths for cert or key throw errors.
+#[test]
+fn wrong_path() -> Result<(), Error> {
+    Command::cargo_bin("dummyhttp")?
+        .args(&["--cert", "wrong", "--key", "tests/data/key.pem"])
+        .assert()
+        .failure()
+        .stdout("lol");
 
     Ok(())
 }
