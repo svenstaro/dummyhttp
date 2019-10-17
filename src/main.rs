@@ -312,6 +312,7 @@ fn main() -> std::io::Result<()> {
             .wrap(Logging)
             .default_service(web::route().to(default_response))
     });
+
     // TODO: This conditional is kinda dirty but it'll have to do until we have stable if let chains.
     if args.tls_cert.is_some() && args.tls_key.is_some() {
         let tls_cert = args.tls_cert.unwrap();
