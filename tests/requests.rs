@@ -4,7 +4,7 @@ use rstest::rstest_parametrize;
 use http::{StatusCode, Method};
 use utils::{DummyhttpProcess, Error};
 
-/// We expect a 200 OK answer with a "dummyhttp" text body.
+/// By default, we expect a 200 OK answer with a "dummyhttp" text body.
 #[rstest_parametrize(method,
     case::get(Method::GET),
     case::post(Method::POST),
