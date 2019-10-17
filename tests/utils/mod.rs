@@ -1,13 +1,14 @@
 use assert_cmd::prelude::*;
-use port_check::free_local_port;
+use port_check::{free_local_port, is_port_reachable};
 use std::ffi::OsStr;
 use std::process::{Child, Command, Stdio};
 use std::thread::sleep;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 /// Error type used by tests
 pub type Error = Box<dyn std::error::Error>;
 
+#[derive(Debug)]
 pub struct DummyhttpProcess {
     pub child: Child,
     pub port: String,
@@ -41,9 +42,13 @@ impl DummyhttpProcess {
             .stdout(Stdio::piped())
             .spawn()?;
 
-        // This isn't a great way of making sure that Dummyhttp is ready to serve connections
-        // but I can't be bothered to do this properly right now.
-        sleep(Duration::from_secs(1));
+        // Wait a max of 1s for the port to become available.
+        let start_wait = Instant::now();
+        while start_wait.elapsed().as_secs() < 1
+            && !is_port_reachable(format!("localhost:{}", port))
+        {
+            sleep(Duration::from_millis(100));
+        }
 
         let proto = if args.into_iter().any(|x| x == "--cert".into()) {
             "https".to_string()
