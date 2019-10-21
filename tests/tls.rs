@@ -4,6 +4,7 @@ use assert_cmd::prelude::*;
 use http::StatusCode;
 use std::process::Command;
 use utils::{DummyhttpProcess, Error};
+use predicates::str::contains;
 
 /// We can connect to a secured connection.
 #[test]
@@ -33,7 +34,8 @@ fn wrong_path() -> Result<(), Error> {
         .args(&["--cert", "wrong", "--key", "tests/data/key.pem"])
         .assert()
         .failure()
-        .stdout("lol");
+        .stderr(contains("Error: Failed to load certificate file 'wrong'"))
+        .stderr(contains("No such file or directory"));
 
     Ok(())
 }

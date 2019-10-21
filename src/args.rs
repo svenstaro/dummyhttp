@@ -37,8 +37,8 @@ pub struct DummyhttpConfig {
 
     /// Interface to bind to
     #[structopt(
-        short = "i",
-        long = "interfaces",
+        short,
+        long,
         parse(try_from_str = parse_interface),
         number_of_values = 1,
         default_value = "0.0.0.0"
@@ -65,7 +65,7 @@ fn parse_interface(src: &str) -> Result<IpAddr, std::net::AddrParseError> {
 fn parse_header(header: &str) -> Result<HeaderMap, String> {
     let header: Vec<&str> = header.split(':').collect();
     if header.len() != 2 {
-        return Err("Wrong header format".to_string());
+        return Err("Wrong header format (see --help for format)".to_string());
     }
 
     let (header_name, header_value) = (header[0], header[1]);

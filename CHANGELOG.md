@@ -1,3 +1,7 @@
+# 0.4.2 (released on 2019-10-21)
+
+- Improve user-visible errors (thanks to `anyhow`)
+
 # 0.4.1 (released on 2019-10-14)
 
 - Print sent body
