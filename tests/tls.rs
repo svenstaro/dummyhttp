@@ -27,14 +27,27 @@ fn tls_works() -> Result<(), Error> {
     Ok(())
 }
 
-/// Wrong paths for cert or key throw errors.
+/// Wrong path for cert throws error.
 #[test]
-fn wrong_path() -> Result<(), Error> {
+fn wrong_path_cert() -> Result<(), Error> {
     Command::cargo_bin("dummyhttp")?
         .args(&["--cert", "wrong", "--key", "tests/data/key.pem"])
         .assert()
         .failure()
         .stderr(contains("Error: Failed to load certificate file 'wrong'"))
+        .stderr(contains("No such file or directory"));
+
+    Ok(())
+}
+
+/// Wrong paths for key throws errors.
+#[test]
+fn wrong_path_key() -> Result<(), Error> {
+    Command::cargo_bin("dummyhttp")?
+        .args(&["--cert", "tests/data/cert.pem", "--key", "wrong"])
+        .assert()
+        .failure()
+        .stderr(contains("Error: Failed to load key file 'wrong'"))
         .stderr(contains("No such file or directory"));
 
     Ok(())

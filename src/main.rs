@@ -5,6 +5,7 @@ use actix_web::web::{self};
 use actix_web::App as ActixApp;
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse, Error};
 use actix_web::{HttpMessage, HttpResponse, HttpServer};
+use anyhow::{Context, Result};
 use bytes::BytesMut;
 use chrono::prelude::*;
 use colored_json::prelude::*;
@@ -21,7 +22,6 @@ use std::net::SocketAddr;
 use std::rc::Rc;
 use structopt::StructOpt;
 use yansi::Paint;
-use anyhow::{Context, Result};
 
 use crate::args::DummyhttpConfig;
 use crate::tls_util::{load_cert, load_private_key};
@@ -320,8 +320,12 @@ fn main() -> Result<()> {
         let tls_key = args.tls_key.unwrap();
 
         let mut config = ServerConfig::new(NoClientAuth::new());
-        let cert_file = load_cert(&tls_cert).context(format!("Failed to load certificate file '{}'", tls_cert.display()))?;
-        let key_file = load_private_key(&tls_key).context(format!("Failed to load key file '{}'", tls_key.display()))?;
+        let cert_file = load_cert(&tls_cert).context(format!(
+            "Failed to load certificate file '{}'",
+            tls_cert.display()
+        ))?;
+        let key_file = load_private_key(&tls_key)
+            .context(format!("Failed to load key file '{}'", tls_key.display()))?;
         config
             .set_single_cert(cert_file, key_file)
             .map_err(|e| IoError::new(IoErrorKind::Other, e.to_string()))?;
@@ -329,5 +333,8 @@ fn main() -> Result<()> {
     } else {
         server = server.bind(socket_addresses.as_slice())?;
     }
-    server.system_exit().run().context("Error in web server runtime")
+    server
+        .system_exit()
+        .run()
+        .context("Error in web server runtime")
 }
