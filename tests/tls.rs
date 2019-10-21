@@ -34,8 +34,7 @@ fn wrong_path_cert() -> Result<(), Error> {
         .args(&["--cert", "wrong", "--key", "tests/data/key.pem"])
         .assert()
         .failure()
-        .stderr(contains("Error: Failed to load certificate file 'wrong'"))
-        .stderr(contains("No such file or directory"));
+        .stderr(contains("Error: Failed to load certificate file 'wrong'"));
 
     Ok(())
 }
@@ -47,8 +46,7 @@ fn wrong_path_key() -> Result<(), Error> {
         .args(&["--cert", "tests/data/cert.pem", "--key", "wrong"])
         .assert()
         .failure()
-        .stderr(contains("Error: Failed to load key file 'wrong'"))
-        .stderr(contains("No such file or directory"));
+        .stderr(contains("Error: Failed to load key file 'wrong'"));
 
     Ok(())
 }
