@@ -96,8 +96,8 @@ where
                 .concat2()
                 .map_err(|e| e.into())
                 .and_then(move |bytes| {
-                    svc.call(req).and_then(move |res| {
-                        let req_ = res.request();
+                    svc.call(req).and_then(move |resp| {
+                        let req_ = resp.request();
                         let app_state: &DummyhttpConfig =
                             req_.app_data().expect("There should be data here");
 
@@ -135,6 +135,9 @@ where
                                 ));
                             }
                             incoming_headers_vec.sort();
+                            if !incoming_headers_vec.is_empty() {
+                                incoming_headers_vec.insert(0, "".to_string());
+                            }
                             let incoming_headers = incoming_headers_vec.join("\n");
 
                             let body = String::from_utf8_lossy(&bytes);
@@ -166,7 +169,7 @@ where
                             };
 
                             let req_info = format!(
-                                "{deco} {method_path_line}\n{headers}{req_body_text}",
+                                "{deco} {method_path_line}{headers}{req_body_text}",
                                 deco = Paint::green("│").bold(),
                                 method_path_line = method_path_version_line,
                                 headers = incoming_headers,
@@ -177,19 +180,19 @@ where
                                 "{http}/{version} {status_code} {status_text}",
                                 http = Paint::blue("HTTP"),
                                 version = Paint::blue(
-                                    format!("{:?}", res.response().head().version)
+                                    format!("{:?}", resp.response().head().version)
                                     .split('/')
                                     .nth(1)
                                     .unwrap_or("unknown")
                                 ),
-                                status_code = Paint::blue(res.status().as_u16()),
+                                status_code = Paint::blue(resp.status().as_u16()),
                                 status_text = Paint::cyan(
-                                    res.status().canonical_reason().unwrap_or("")
+                                    resp.status().canonical_reason().unwrap_or("")
                                 ),
                             );
 
                             let mut outgoing_headers_vec = vec![];
-                            for (hk, hv) in res.headers() {
+                            for (hk, hv) in resp.headers() {
                                 outgoing_headers_vec.push(format!(
                                         "{deco} {key}: {value}",
                                         deco = Paint::red("│").bold(),
@@ -198,10 +201,13 @@ where
                                         value = hv.to_str().unwrap_or("<unprintable>")
                                 ));
                             }
+                            if !outgoing_headers_vec.is_empty() {
+                                outgoing_headers_vec.insert(0, "".to_string());
+                            }
                             outgoing_headers_vec.sort();
                             let outgoing_headers = outgoing_headers_vec.join("\n");
 
-                            let res_body_text = if app_state.body.is_empty() {
+                            let resp_body_text = if app_state.body.is_empty() {
                                 "".to_string()
                             } else {
                                 let body_formatted = app_state.body
@@ -217,22 +223,22 @@ where
                                 )
                             };
 
-                            let res_info = format!(
-                                "{deco} {status_line}\n{headers}{res_body_text}",
+                            let resp_info = format!(
+                                "{deco} {status_line}{headers}{resp_body_text}",
                                 deco = Paint::red("│").bold(),
                                 status_line = status_line,
                                 headers = outgoing_headers,
-                                res_body_text = res_body_text,
+                                resp_body_text = resp_body_text,
                             );
 
                             info!(
-                                "Connection from {remote} at {entry_time}\n{req_banner}\n{req_info}\n{res_banner}\n{res_info}",
+                                "Connection from {remote} at {entry_time}\n{req_banner}\n{req_info}\n{resp_banner}\n{resp_info}",
                                 req_banner = Paint::green("┌─Incoming request").bold(),
                                 remote = remote,
                                 entry_time = entry_time,
                                 req_info = req_info,
-                                res_banner = Paint::red("┌─Outgoing response").bold(),
-                                res_info = res_info,
+                                resp_banner = Paint::red("┌─Outgoing response").bold(),
+                                resp_info = resp_info,
                             );
                         } else {
                             info!(
@@ -242,7 +248,7 @@ where
                             );
                         }
 
-                        Ok(res)
+                        Ok(resp)
                     })
                 }),
         )
