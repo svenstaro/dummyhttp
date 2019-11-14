@@ -1,3 +1,7 @@
+# 0.4.3 (released on 2019-11-14)
+
+- Improve verbose output in some corner cases
+
 # 0.4.2 (released on 2019-10-21)
 
 - Improve user-visible errors (thanks to `anyhow`)
