@@ -1,12 +1,10 @@
 use actix_service::{Service, Transform};
-use actix_web::error::PayloadError;
 use actix_web::http::{header, StatusCode};
 use actix_web::web::{self};
 use actix_web::App as ActixApp;
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse, Error};
 use actix_web::{HttpMessage, HttpResponse, HttpServer};
 use anyhow::{Context, Result};
-use bytes::BytesMut;
 use chrono::prelude::*;
 use colored_json::prelude::*;
 use futures::future::{ok, FutureResult};
@@ -95,10 +93,7 @@ where
 
         Box::new(
             req.take_payload()
-                .fold(BytesMut::new(), move |mut body, chunk| {
-                    body.extend_from_slice(&chunk);
-                    Ok::<_, PayloadError>(body)
-                })
+                .concat2()
                 .map_err(|e| e.into())
                 .and_then(move |bytes| {
                     svc.call(req).and_then(move |res| {
