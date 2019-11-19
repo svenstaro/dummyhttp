@@ -5,6 +5,7 @@ use std::io::Read;
 use std::process::Command;
 use structopt::clap::{crate_name, crate_version};
 use utils::{DummyhttpProcess, Error};
+use rstest::rstest_parametrize;
 
 /// Show help and exit.
 #[test]
@@ -44,9 +45,8 @@ fn has_some_output_by_default() -> Result<(), Error> {
         .unwrap()
         .read_to_string(&mut output)?;
 
-    dbg!(&output);
-    assert!(output.find("Starting server").is_some());
-    assert!(output.find("Connection from").is_some());
+    assert!(output.contains("Starting server"));
+    assert!(output.contains("Connection from"));
 
     Ok(())
 }
@@ -71,12 +71,13 @@ fn has_quiet_output() -> Result<(), Error> {
     Ok(())
 }
 
-/// If we pass --verbose, we get a ton of pretty output.
-#[test]
-fn has_verbose_output() -> Result<(), Error> {
-    let mut dh = DummyhttpProcess::new(vec!["--verbose"])?;
+/// If we pass -v/--verbose, we get a ton of pretty output.
+#[rstest_parametrize(flag, case::v("-v"), case::verbose("--verbose"))]
+fn has_verbose_output(flag: &'static str) -> Result<(), Error> {
+    let mut dh = DummyhttpProcess::new(vec![flag, "-b", "teststring"])?;
 
-    reqwest::get(&dh.url)?.error_for_status()?;
+    let client = reqwest::Client::new();
+    client.post(&dh.url).body("some body").send()?.error_for_status()?;
 
     dh.child.kill()?;
     let mut output = String::new();
@@ -86,8 +87,34 @@ fn has_verbose_output() -> Result<(), Error> {
         .unwrap()
         .read_to_string(&mut output)?;
 
-    assert!(output.find("Incoming request").is_some());
-    assert!(output.find("Outgoing response").is_some());
+    assert!(output.contains("Incoming request"));
+    assert!(output.contains("Outgoing response"));
+    assert!(!output.contains("teststring"));
+    assert!(!output.contains("some body"));
+
+    Ok(())
+}
+
+/// If we pass -vv, we also get body output.
+#[test]
+fn has_very_verbose_output() -> Result<(), Error> {
+    let mut dh = DummyhttpProcess::new(vec!["-vv", "-b", "teststring"])?;
+
+    let client = reqwest::Client::new();
+    client.post(&dh.url).body("some body").send()?.error_for_status()?;
+
+    dh.child.kill()?;
+    let mut output = String::new();
+    dh.child
+        .stdout
+        .as_mut()
+        .unwrap()
+        .read_to_string(&mut output)?;
+
+    assert!(output.contains("Incoming request"));
+    assert!(output.contains("Outgoing response"));
+    assert!(output.contains("teststring"));
+    assert!(output.contains("some body"));
 
     Ok(())
 }

@@ -28,7 +28,7 @@ pub fn load_private_key(filename: &PathBuf) -> Result<rustls::PrivateKey> {
         })?
     };
 
-    // prefer to load pkcs8 keys
+    // Prefer to load pkcs8 keys.
     if !pkcs8_keys.is_empty() {
         Ok(pkcs8_keys[0].clone())
     } else {

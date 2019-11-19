@@ -109,7 +109,7 @@ where
                             } else {
                                 "unknown time".to_string()
                             };
-                        if app_state.verbose {
+                        if app_state.verbose >= 1 {
                             let path_query = if req_.query_string().is_empty() {
                                 req_.path().to_string()
                             } else {
@@ -141,7 +141,7 @@ where
                             let incoming_headers = incoming_headers_vec.join("\n");
 
                             let body = String::from_utf8_lossy(&bytes);
-                            let req_body_text = if body.is_empty() {
+                            let req_body_text = if body.is_empty() || app_state.verbose < 2 {
                                 "".to_string()
                             } else {
                                 let body_formatted = if let Some(content_type) = req_.headers().get(header::CONTENT_TYPE) {
@@ -207,7 +207,7 @@ where
                             outgoing_headers_vec.sort();
                             let outgoing_headers = outgoing_headers_vec.join("\n");
 
-                            let resp_body_text = if app_state.body.is_empty() {
+                            let resp_body_text = if app_state.body.is_empty() || app_state.verbose < 2 {
                                 "".to_string()
                             } else {
                                 let body_formatted = app_state.body

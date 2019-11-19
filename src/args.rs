@@ -15,9 +15,10 @@ pub struct DummyhttpConfig {
     #[structopt(short, long)]
     pub quiet: bool,
 
-    /// Be verbose (log data of incoming and outgoing requests)
-    #[structopt(short, long)]
-    pub verbose: bool,
+    /// Be verbose (log data of incoming and outgoing requests). If given twice it will also log
+    /// the body data.
+    #[structopt(short, long, parse(from_occurrences))]
+    pub verbose: u8,
 
     /// Port on which to listen
     #[structopt(short, long, default_value = "8080")]
