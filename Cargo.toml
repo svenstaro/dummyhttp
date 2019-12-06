@@ -38,7 +38,7 @@ colored_json = "2"
 anyhow = "1"
 
 [dev-dependencies]
-assert_cmd = "0.11"
+assert_cmd = "0.12"
 reqwest = "0.9"
 port_check = "0.1"
 rstest = "0.4"
