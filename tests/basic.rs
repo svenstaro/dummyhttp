@@ -5,7 +5,7 @@ use std::io::Read;
 use std::process::Command;
 use structopt::clap::{crate_name, crate_version};
 use utils::{DummyhttpProcess, Error};
-use rstest::rstest_parametrize;
+use rstest::rstest;
 
 /// Show help and exit.
 #[test]
@@ -72,7 +72,7 @@ fn has_quiet_output() -> Result<(), Error> {
 }
 
 /// If we pass -v/--verbose, we get a ton of pretty output.
-#[rstest_parametrize(flag, case::v("-v"), case::verbose("--verbose"))]
+#[rstest(flag, case::v("-v"), case::verbose("--verbose"))]
 fn has_verbose_output(flag: &'static str) -> Result<(), Error> {
     let mut dh = DummyhttpProcess::new(vec![flag, "-b", "teststring"])?;
 

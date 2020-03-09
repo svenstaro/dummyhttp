@@ -1,11 +1,11 @@
 mod utils;
 
-use rstest::rstest_parametrize;
+use rstest::rstest;
 use http::{StatusCode, Method};
 use utils::{DummyhttpProcess, Error};
 
 /// By default, we expect a 200 OK answer with a "dummyhttp" text body.
-#[rstest_parametrize(method,
+#[rstest(method,
     case::get(Method::GET),
     case::post(Method::POST),
     case::put(Method::PUT),
@@ -26,7 +26,7 @@ fn serves_requests_with_no_options(method: http::Method) -> Result<(), Error> {
 }
 
 /// Setting a custom body will always answer with that body.
-#[rstest_parametrize(method,
+#[rstest(method,
     case::get(Method::GET),
     case::post(Method::POST),
     case::put(Method::PUT),
@@ -47,7 +47,7 @@ fn returns_custom_body(method: Method) -> Result<(), Error> {
 }
 
 /// Setting a custom code will always answer with that code.
-#[rstest_parametrize(method,
+#[rstest(method,
     case::get(Method::GET),
     case::post(Method::POST),
     case::put(Method::PUT),
@@ -68,7 +68,7 @@ fn returns_custom_code(method: Method) -> Result<(), Error> {
 }
 
 /// Setting a custom header will always return that header.
-#[rstest_parametrize(method,
+#[rstest(method,
     case::get(Method::GET),
     case::post(Method::POST),
     case::put(Method::PUT),
