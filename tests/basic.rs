@@ -1,11 +1,12 @@
 mod utils;
 
 use assert_cmd::prelude::*;
+use reqwest::blocking::Client;
+use rstest::rstest;
 use std::io::Read;
 use std::process::Command;
 use structopt::clap::{crate_name, crate_version};
 use utils::{DummyhttpProcess, Error};
-use rstest::rstest;
 
 /// Show help and exit.
 #[test]
@@ -35,7 +36,7 @@ fn version_shows() -> Result<(), Error> {
 fn has_some_output_by_default() -> Result<(), Error> {
     let mut dh = DummyhttpProcess::new(Vec::<String>::new())?;
 
-    reqwest::get(&dh.url)?.error_for_status()?;
+    reqwest::blocking::get(&dh.url)?.error_for_status()?;
 
     dh.child.kill()?;
     let mut output = String::new();
@@ -56,7 +57,7 @@ fn has_some_output_by_default() -> Result<(), Error> {
 fn has_quiet_output() -> Result<(), Error> {
     let mut dh = DummyhttpProcess::new(vec!["--quiet"])?;
 
-    reqwest::get(&dh.url)?.error_for_status()?;
+    reqwest::blocking::get(&dh.url)?.error_for_status()?;
 
     dh.child.kill()?;
     let mut output = String::new();
@@ -76,8 +77,12 @@ fn has_quiet_output() -> Result<(), Error> {
 fn has_verbose_output(flag: &'static str) -> Result<(), Error> {
     let mut dh = DummyhttpProcess::new(vec![flag, "-b", "teststring"])?;
 
-    let client = reqwest::Client::new();
-    client.post(&dh.url).body("some body").send()?.error_for_status()?;
+    let client = Client::new();
+    client
+        .post(&dh.url)
+        .body("some body")
+        .send()?
+        .error_for_status()?;
 
     dh.child.kill()?;
     let mut output = String::new();
@@ -100,8 +105,12 @@ fn has_verbose_output(flag: &'static str) -> Result<(), Error> {
 fn has_very_verbose_output() -> Result<(), Error> {
     let mut dh = DummyhttpProcess::new(vec!["-vv", "-b", "teststring"])?;
 
-    let client = reqwest::Client::new();
-    client.post(&dh.url).body("some body").send()?.error_for_status()?;
+    let client = Client::new();
+    client
+        .post(&dh.url)
+        .body("some body")
+        .send()?
+        .error_for_status()?;
 
     dh.child.kill()?;
     let mut output = String::new();

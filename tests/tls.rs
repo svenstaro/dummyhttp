@@ -2,9 +2,10 @@ mod utils;
 
 use assert_cmd::prelude::*;
 use http::StatusCode;
+use predicates::str::contains;
+use reqwest::blocking::ClientBuilder;
 use std::process::Command;
 use utils::{DummyhttpProcess, Error};
-use predicates::str::contains;
 
 /// We can connect to a secured connection.
 #[test]
@@ -16,13 +17,13 @@ fn tls_works() -> Result<(), Error> {
         "tests/data/key.pem",
     ])?;
 
-    let client = reqwest::ClientBuilder::new()
+    let client = ClientBuilder::new()
         .danger_accept_invalid_certs(true)
         .build()?;
-    let mut resp = client.get(&dh.url).send()?;
+    let resp = client.get(&dh.url).send()?;
 
-    assert_eq!(resp.text()?, "dummyhttp\n");
     assert_eq!(resp.status(), StatusCode::OK);
+    assert_eq!(resp.text()?, "dummyhttp\n");
 
     Ok(())
 }

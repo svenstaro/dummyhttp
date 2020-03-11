@@ -25,7 +25,7 @@ structopt = "0.3"
 actix-web = { version= "1.0", features = ["rust-tls"] }
 actix-service = "0.4"
 actix-http = "0.2"
-http = "0.1.20"
+http = "0.2"
 simplelog = "0.7"
 log = "0.4"
 futures = "0.1.29"
@@ -39,7 +39,7 @@ anyhow = "1"
 
 [dev-dependencies]
 assert_cmd = "0.12"
-reqwest = "0.9"
+reqwest = { version = "0.10", features = ["blocking"] }
 port_check = "0.1"
 rstest = "0.6"
 pretty_assertions = "0.6"
