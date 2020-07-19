@@ -5,6 +5,7 @@
 [![AUR](https://img.shields.io/aur/version/dummyhttp.svg)](https://aur.archlinux.org/packages/dummyhttp/)
 [![Crates.io](https://img.shields.io/crates/v/dummyhttp.svg)](https://crates.io/crates/dummyhttp)
 [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/svenstaro/dummyhttp/blob/master/LICENSE)
+[![Lines of Code](https://tokei.rs/b1/github/svenstaro/dummyhttp)](https://github.com/svenstaro/dummyhttp)
 
 **A super simple HTTP server that replies with a fixed body and a fixed response code**
 
