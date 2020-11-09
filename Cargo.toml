@@ -43,5 +43,5 @@ reqwest = { version = "0.10", features = ["blocking"] }
 port_check = "0.1"
 rstest = "0.6"
 pretty_assertions = "0.6"
-url = "2.1"
+url = "2.2"
 predicates = "1"
