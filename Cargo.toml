@@ -10,10 +10,6 @@ keywords = ["dummy", "fake", "http-server", "http", "server"]
 categories = ["command-line-utilities", "command-line-interface", "network-programming", "web-programming::http-server"]
 edition = "2018"
 
-[badges]
-travis-ci = { repository = "svenstaro/dummyhttp", branch = "master" }
-maintenance = { status = "actively-developed" }
-
 [profile.release]
 lto = true
 opt-level = 'z'
