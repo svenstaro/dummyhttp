@@ -20,7 +20,7 @@ actix-web = { version= "1.0", features = ["rust-tls"] }
 actix-service = "0.4"
 actix-http = "2.2"
 http = "0.2"
-simplelog = "0.8"
+simplelog = "0.9"
 log = "0.4"
 futures = "0.1.29"
 chrono = "0.4"
