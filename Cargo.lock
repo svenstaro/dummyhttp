@@ -897,7 +897,7 @@ version = "0.4.3"
 dependencies = [
  "Inflector",
  "actix-http 2.2.0",
- "actix-service 0.4.2",
+ "actix-service 1.0.6",
  "actix-web",
  "anyhow",
  "assert_cmd",
