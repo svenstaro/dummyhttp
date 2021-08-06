@@ -32,7 +32,7 @@ colored_json = "2"
 anyhow = "1"
 
 [dev-dependencies]
-assert_cmd = "1.0"
+assert_cmd = "2.0"
 reqwest = { version = "0.11", features = ["blocking"] }
 port_check = "0.1"
 rstest = "0.11"
