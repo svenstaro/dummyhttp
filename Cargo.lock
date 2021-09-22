@@ -75,7 +75,7 @@ dependencies = [
  "derive_more 0.99.11",
  "either",
  "futures-util",
- "http 0.2.4",
+ "http 0.2.5",
  "log",
  "trust-dns-proto 0.19.6",
  "trust-dns-resolver 0.19.6",
@@ -156,7 +156,7 @@ dependencies = [
  "futures-util",
  "fxhash",
  "h2 0.2.7",
- "http 0.2.4",
+ "http 0.2.5",
  "httparse",
  "indexmap",
  "itoa",
@@ -910,7 +910,7 @@ dependencies = [
  "chrono",
  "colored_json",
  "futures 0.1.30",
- "http 0.2.4",
+ "http 0.2.5",
  "log",
  "port_check",
  "predicates",
@@ -1225,7 +1225,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "futures-util",
- "http 0.2.4",
+ "http 0.2.5",
  "indexmap",
  "slab",
  "tokio 0.2.23",
@@ -1245,7 +1245,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "futures-util",
- "http 0.2.4",
+ "http 0.2.5",
  "indexmap",
  "slab",
  "tokio 1.2.0",
@@ -1312,9 +1312,9 @@ dependencies = [
 
 [[package]]
 name = "http"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "527e8c9ac747e28542699a951517aa9a6945af506cd1f2e1b53a576c17b6cc11"
+checksum = "1323096b05d41827dadeaee54c9981958c0f94e670bc94ed80037d1a7b8b186b"
 dependencies = [
  "bytes 1.0.0",
  "fnv",
@@ -1328,7 +1328,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2861bd27ee074e5ee891e8b539837a9430012e249d7f0ca2d795650f579c1994"
 dependencies = [
  "bytes 1.0.0",
- "http 0.2.4",
+ "http 0.2.5",
 ]
 
 [[package]]
@@ -1354,7 +1354,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "h2 0.3.0",
- "http 0.2.4",
+ "http 0.2.5",
  "http-body",
  "httparse",
  "httpdate",
@@ -2258,7 +2258,7 @@ dependencies = [
  "encoding_rs",
  "futures-core",
  "futures-util",
- "http 0.2.4",
+ "http 0.2.5",
  "http-body",
  "hyper",
  "hyper-tls",
