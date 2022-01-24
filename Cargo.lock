@@ -133,9 +133,9 @@ dependencies = [
 
 [[package]]
 name = "actix-http"
-version = "2.2.1"
+version = "2.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5cb8958da437716f3f31b0e76f8daf36554128517d7df37ceba7df00f09622ee"
+checksum = "2be6b66b62a794a8e6d366ac9415bb7d475ffd1e9f4671f38c1d8a8a5df950b3"
 dependencies = [
  "actix-codec 0.3.0",
  "actix-connect 2.0.0",
@@ -902,7 +902,7 @@ name = "dummyhttp"
 version = "0.4.3"
 dependencies = [
  "Inflector",
- "actix-http 2.2.1",
+ "actix-http 2.2.2",
  "actix-service 0.4.2",
  "actix-web",
  "anyhow",
