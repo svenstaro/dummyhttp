@@ -69,11 +69,11 @@ Example with color:
     dummyhttp -b '{"Hello": "World"}' -h "content-type:application/json"
     curl localhost:8080
     # < HTTP/1.1 200 OK
-    # < content-length: 10
+    # < content-length: 19
     # < content-type: application/json
-    # < date: Thu, 14 Jun 2018 11:10:14 GMT
+    # < date: Fri, 29 Jul 2022 11:07:53 GMT
     # <
-    # Hello World
+    # {"Hello": "World"}
 
 ## How to install
 
