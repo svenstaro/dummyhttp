@@ -66,7 +66,7 @@ Example with color:
 
 ### Return a specific header
 
-    dummyhttp -b "Hello World" -H application/json
+    dummyhttp -b '{"Hello": "World"}' -h "content-type:application/json"
     curl localhost:8080
     # < HTTP/1.1 200 OK
     # < content-length: 10
