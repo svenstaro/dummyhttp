@@ -1,57 +1,52 @@
-use actix_web::http::header::{self, HeaderMap};
+use clap::Parser;
+use hyper::header::{HeaderMap, HeaderName, HeaderValue};
 use std::net::IpAddr;
 use std::path::PathBuf;
-use structopt::StructOpt;
 
-#[derive(Debug, Clone, StructOpt)]
-#[structopt(
-    name = "dummyhttp",
-    author,
-    about,
-    global_settings = &[structopt::clap::AppSettings::ColoredHelp]
-)]
-pub struct DummyhttpConfig {
+#[derive(Debug, Clone, Parser)]
+#[clap(name = "dummyhttp", author, about, version)]
+pub struct Args {
     /// Be quiet (log nothing)
-    #[structopt(short, long)]
+    #[clap(short, long)]
     pub quiet: bool,
 
     /// Be verbose (log data of incoming and outgoing requests). If given twice it will also log
     /// the body data.
-    #[structopt(short, long, parse(from_occurrences))]
+    #[clap(short, long, parse(from_occurrences))]
     pub verbose: u8,
 
     /// Port on which to listen
-    #[structopt(short, long, default_value = "8080")]
+    #[clap(short, long, default_value = "8080")]
     pub port: u16,
 
     /// Headers to send (format: key:value)
-    #[structopt(short, long, parse(try_from_str = parse_header))]
+    #[clap(short, long, parse(try_from_str = parse_header))]
     pub headers: Vec<HeaderMap>,
 
     /// HTTP status code to send
-    #[structopt(short, long, default_value = "200")]
+    #[clap(short, long, default_value = "200")]
     pub code: u16,
 
     /// HTTP body to send
-    #[structopt(short, long, default_value = "dummyhttp")]
+    #[clap(short, long, default_value = "dummyhttp")]
     pub body: String,
 
     /// Interface to bind to
-    #[structopt(
+    #[clap(
         short,
         long,
         parse(try_from_str = parse_interface),
         number_of_values = 1,
         default_value = "0.0.0.0"
     )]
-    pub interfaces: Vec<IpAddr>,
+    pub interface: IpAddr,
 
     /// TLS cert to use
-    #[structopt(long = "cert", requires = "tls-key")]
+    #[clap(long = "cert", requires = "tls-key")]
     pub tls_cert: Option<PathBuf>,
 
     /// TLS key to use
-    #[structopt(long = "key", requires = "tls-cert")]
+    #[clap(long = "key", requires = "tls-cert")]
     pub tls_key: Option<PathBuf>,
 }
 
@@ -71,10 +66,10 @@ fn parse_header(header: &str) -> Result<HeaderMap, String> {
 
     let (header_name, header_value) = (header[0], header[1]);
 
-    let hn = header::HeaderName::from_lowercase(header_name.to_lowercase().as_bytes())
+    let hn = HeaderName::from_lowercase(header_name.to_lowercase().as_bytes())
         .map_err(|e| e.to_string())?;
 
-    let hv = header::HeaderValue::from_str(header_value).map_err(|e| e.to_string())?;
+    let hv = HeaderValue::from_str(header_value).map_err(|e| e.to_string())?;
 
     let mut map = HeaderMap::new();
     map.insert(hn, hv);

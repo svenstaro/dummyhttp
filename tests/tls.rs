@@ -1,7 +1,7 @@
 mod utils;
 
 use assert_cmd::prelude::*;
-use http::StatusCode;
+use axum::http::StatusCode;
 use predicates::str::contains;
 use reqwest::blocking::ClientBuilder;
 use std::process::Command;

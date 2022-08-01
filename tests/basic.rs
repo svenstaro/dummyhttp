@@ -1,11 +1,11 @@
 mod utils;
 
 use assert_cmd::prelude::*;
+use clap::{crate_name, crate_version};
 use reqwest::blocking::Client;
 use rstest::rstest;
 use std::io::Read;
 use std::process::Command;
-use structopt::clap::{crate_name, crate_version};
 use utils::{DummyhttpProcess, Error};
 
 /// Show help and exit.

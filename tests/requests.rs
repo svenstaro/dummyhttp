@@ -1,6 +1,6 @@
 mod utils;
 
-use http::{Method, StatusCode};
+use axum::http::{self, Method, StatusCode};
 use reqwest::blocking::Client;
 use rstest::rstest;
 use utils::{DummyhttpProcess, Error};
