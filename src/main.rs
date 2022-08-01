@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use axum::{
     body::{Body, Bytes},
     extract::ConnectInfo,
@@ -12,12 +12,11 @@ use axum::{
 };
 use axum_server::tls_rustls::RustlsConfig;
 use chrono::Local;
-use clap::Parser;
+use clap::{crate_version, Parser};
 use colored::*;
 use colored_json::ToColoredJson;
 use hyper::{header::CONTENT_TYPE, HeaderMap};
 use inflector::Inflector;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::args::Args;
 
@@ -188,7 +187,7 @@ async fn print_request_response(
             resp_banner = "┌─Outgoing response".red().bold(),
             resp_info = resp_info,
         );
-    } else {
+    } else if !args.quiet {
         println!("{connect_line}",);
     }
 
@@ -221,25 +220,36 @@ where
 async fn main() -> Result<()> {
     let args = Args::from_args();
 
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG")
-                .unwrap_or_else(|_| "example_print_request_response=debug,tower_http=debug".into()),
-        ))
-        .with(tracing_subscriber::fmt::layer())
-        .init();
-
     let app = Router::new()
         .fallback(dummy_response.into_service())
         .layer(middleware::from_fn(print_request_response))
         .layer(Extension(args.clone()));
 
     let addr = SocketAddr::from((args.interface, args.port));
-    tracing::debug!("listening on {}", addr);
+    if !args.quiet {
+        println!(
+            "{}{} {} {}{}",
+            "dummyhttp v".bold(),
+            crate_version!().bold(),
+            "listening on".dimmed(),
+            if args.tls_cert.is_some() {
+                "https://".bold()
+            } else {
+                "http://".bold()
+            },
+            addr.to_string().bold()
+        );
+    }
 
     // configure certificate and private key used by https
     if let (Some(tls_cert), Some(tls_key)) = (args.tls_cert, args.tls_key) {
-        let tls_config = RustlsConfig::from_pem_file(tls_cert, tls_key).await?;
+        let tls_config = RustlsConfig::from_pem_file(&tls_cert, &tls_key)
+            .await
+            .context(format!(
+                "Failed to load certificate file '{}' or key '{}'",
+                tls_cert.to_string_lossy(),
+                tls_key.to_string_lossy()
+            ))?;
         axum_server::bind_rustls(addr, tls_config)
             .serve(app.into_make_service_with_connect_info::<SocketAddr>())
             .await?;

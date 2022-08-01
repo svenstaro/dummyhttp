@@ -23,7 +23,7 @@ fn tls_works() -> Result<(), Error> {
     let resp = client.get(&dh.url).send()?;
 
     assert_eq!(resp.status(), StatusCode::OK);
-    assert_eq!(resp.text()?, "dummyhttp\n");
+    assert_eq!(resp.text()?, "dummyhttp");
 
     Ok(())
 }
@@ -35,7 +35,9 @@ fn wrong_path_cert() -> Result<(), Error> {
         .args(&["--cert", "wrong", "--key", "tests/data/key.pem"])
         .assert()
         .failure()
-        .stderr(contains("Error: Failed to load certificate file 'wrong'"));
+        .stderr(contains(
+            "Error: Failed to load certificate file 'wrong' or key 'tests/data/key.pem'",
+        ));
 
     Ok(())
 }
@@ -47,7 +49,9 @@ fn wrong_path_key() -> Result<(), Error> {
         .args(&["--cert", "tests/data/cert.pem", "--key", "wrong"])
         .assert()
         .failure()
-        .stderr(contains("Error: Failed to load key file 'wrong'"));
+        .stderr(contains(
+            "Error: Failed to load certificate file 'tests/data/cert.pem' or key 'wrong'",
+        ));
 
     Ok(())
 }

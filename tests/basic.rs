@@ -46,8 +46,8 @@ fn has_some_output_by_default() -> Result<(), Error> {
         .unwrap()
         .read_to_string(&mut output)?;
 
-    assert!(output.contains("Starting server"));
-    assert!(output.contains("Connection from"));
+    assert!(output.contains("dummyhttp"));
+    assert!(output.contains("GET"));
 
     Ok(())
 }
@@ -67,6 +67,7 @@ fn has_quiet_output() -> Result<(), Error> {
         .unwrap()
         .read_to_string(&mut output)?;
 
+    dbg!(&output);
     assert!(output.is_empty());
 
     Ok(())

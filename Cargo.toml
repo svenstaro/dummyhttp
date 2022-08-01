@@ -20,19 +20,17 @@ strip = true
 Inflector = "0.11"
 anyhow = "1"
 axum = { version = "0.5", features = ["http2"] }
-axum-server = { version = "0.3", features = ["tls-rustls"] }
-chrono = "0.4.20-rc.1"
+axum-server = { version = "0.4", features = ["tls-rustls"] }
+chrono = "0.4.20"
 clap = { version = "3.2", features = ["derive", "cargo", "wrap_help"] }
 clap_complete = "3.2.3"
 clap_mangen = "0.1"
 colored = "2"
 colored_json = "2"
-hyper = { version = "0.14", features = ["full"] }
+hyper = { version = "0.14" }
 serde_json = "1.0"
-tokio = { version = "1.0", features = ["full"] }
+tokio = { version = "1.0" }
 tower = { version = "0.4", features = ["util", "filter"] }
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 [dev-dependencies]
 assert_cmd = "2.0"
