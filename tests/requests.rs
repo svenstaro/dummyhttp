@@ -1,6 +1,6 @@
 mod utils;
 
-use http::{Method, StatusCode};
+use axum::http::{self, Method, StatusCode};
 use reqwest::blocking::Client;
 use rstest::rstest;
 use utils::{DummyhttpProcess, Error};
@@ -22,7 +22,7 @@ fn serves_requests_with_no_options(method: http::Method) -> Result<(), Error> {
     let resp = client.request(method, &dh.url).send()?;
 
     assert_eq!(resp.status(), StatusCode::OK);
-    assert_eq!(resp.text()?, "dummyhttp\n");
+    assert_eq!(resp.text()?, "dummyhttp");
 
     Ok(())
 }
@@ -44,7 +44,7 @@ fn returns_custom_body(method: Method) -> Result<(), Error> {
     let resp = client.request(method, &dh.url).send()?;
 
     assert_eq!(resp.status(), StatusCode::OK);
-    assert_eq!(resp.text()?, "hi test\n");
+    assert_eq!(resp.text()?, "hi test");
 
     Ok(())
 }
@@ -66,7 +66,7 @@ fn returns_custom_code(method: Method) -> Result<(), Error> {
     let resp = client.request(method, &dh.url).send()?;
 
     assert_eq!(resp.status(), StatusCode::CREATED);
-    assert_eq!(resp.text()?, "dummyhttp\n");
+    assert_eq!(resp.text()?, "dummyhttp");
 
     Ok(())
 }
@@ -89,7 +89,7 @@ fn returns_custom_headers(method: Method) -> Result<(), Error> {
 
     assert_eq!(resp.status(), StatusCode::OK);
     assert_eq!(resp.headers().get("test").unwrap(), "header");
-    assert_eq!(resp.text()?, "dummyhttp\n");
+    assert_eq!(resp.text()?, "dummyhttp");
 
     Ok(())
 }

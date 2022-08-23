@@ -12,30 +12,31 @@ edition = "2018"
 
 [profile.release]
 lto = true
+opt-level = 'z'
 codegen-units = 1
+strip = true
 
 [dependencies]
-structopt = "0.3"
-actix-web = { version= "1.0", features = ["rust-tls"] }
-actix-service = "0.4"
-actix-http = "2.2"
-http = "0.2"
-simplelog = "0.9"
-log = "0.4"
-futures = "0.1.29"
-chrono = "0.4"
-rustls = "0.15"
-yansi = "0.5"
 Inflector = "0.11"
-serde_json = "1.0"
-colored_json = "2"
 anyhow = "1"
+axum = { version = "0.5", features = ["http2"] }
+axum-server = { version = "0.4", features = ["tls-rustls"] }
+chrono = "0.4.20"
+clap = { version = "3.2", features = ["derive", "cargo", "wrap_help"] }
+clap_complete = "3.2.3"
+clap_mangen = "0.1"
+colored = "2"
+colored_json = "2"
+hyper = { version = "0.14" }
+serde_json = "1.0"
+tokio = { version = "1.0" }
+tower = { version = "0.4", features = ["util", "filter"] }
 
 [dev-dependencies]
 assert_cmd = "2.0"
-reqwest = { version = "0.11", features = ["blocking"] }
 port_check = "0.1"
-rstest = "0.12"
-pretty_assertions = "1.2"
-url = "2.2"
 predicates = "2"
+pretty_assertions = "1.2"
+reqwest = { version = "0.11", features = ["blocking"] }
+rstest = "0.15"
+url = "2.2"
