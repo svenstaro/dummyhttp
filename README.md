@@ -37,7 +37,7 @@ Example with color:
 ### Running with no arguments always returns 200 on all interfaces at port 8080
 
     dummyhttp
-    curl localhost:8080
+    curl -v localhost:8080
     # < HTTP/1.1 200 OK
     # < content-length: 10
     # < date: Sat, 09 Jun 2018 13:56:14 GMT
@@ -47,7 +47,7 @@ Example with color:
 ### Always emit 400 Bad Request
 
     dummyhttp -c 400
-    curl localhost:8080
+    curl -v localhost:8080
     # < HTTP/1.1 400 Bad Request
     # < content-length: 10
     # < date: Sat, 09 Jun 2018 13:57:53 GMT
@@ -57,7 +57,7 @@ Example with color:
 ### Always return a certain string
 
     dummyhttp -b "Hello World"
-    curl localhost:8080
+    curl -v localhost:8080
     # < HTTP/1.1 200 OK
     # < content-length: 12
     # < date: Sat, 09 Jun 2018 13:58:57 GMT
@@ -66,14 +66,14 @@ Example with color:
 
 ### Return a specific header
 
-    dummyhttp -b "Hello World" -H application/json
-    curl localhost:8080
+    dummyhttp -b '{"Hello": "World"}' -H "content-type:application/json"
+    curl -v localhost:8080
     # < HTTP/1.1 200 OK
-    # < content-length: 10
     # < content-type: application/json
-    # < date: Thu, 14 Jun 2018 11:10:14 GMT
+    # < date: Wed, 24 Aug 2022 00:55:35 +0200
+    # < content-length: 18
     # <
-    # Hello World
+    # {"Hello": "World"}
 
 ## How to install
 
@@ -98,27 +98,26 @@ Example with color:
 
 ## Full options
 
-    dummyhttp 0.4.3
+    dummyhttp 0.5.0
     Sven-Hendrik Haase <svenstaro@gmail.com>
     Super simple HTTP server that replies with a fixed body and a fixed response code
 
     USAGE:
-        dummyhttp [FLAGS] [OPTIONS]
-
-    FLAGS:
-            --help       Prints help information
-        -q, --quiet      Be quiet (log nothing)
-        -V, --version    Prints version information
-        -v, --verbose    Be verbose (log data of incoming and outgoing requests)
+        dummyhttp [OPTIONS]
 
     OPTIONS:
-        -b, --body <body>                   HTTP body to send [default: dummyhttp]
-        -c, --code <code>                   HTTP status code to send [default: 200]
-        -h, --headers <headers>...          Headers to send (format: key:value)
-        -i, --interfaces <interfaces>...    Interface to bind to [default: 0.0.0.0]
-        -p, --port <port>                   Port on which to listen [default: 8080]
-            --cert <tls-cert>               TLS cert to use
-            --key <tls-key>                 TLS key to use
+        -b, --body <BODY>              HTTP body to send [default: dummyhttp]
+        -c, --code <CODE>              HTTP status code to send [default: 200]
+            --cert <TLS_CERT>          TLS cert to use
+        -h, --headers <HEADERS>        Headers to send (format: key:value)
+            --help                     Print help information
+        -i, --interface <INTERFACE>    Interface to bind to [default: 0.0.0.0]
+            --key <TLS_KEY>            TLS key to use
+        -p, --port <PORT>              Port on which to listen [default: 8080]
+        -q, --quiet                    Be quiet (log nothing)
+        -v, --verbose                  Be verbose (log data of incoming and outgoing requests). If given twice it will also log the body
+                                       data
+        -V, --version                  Print version information
 
 ## Releasing
 

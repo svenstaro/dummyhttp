@@ -1,3 +1,9 @@
+# 0.5.0 (released on 2022-08-24)
+
+- Rewritten to Axum which makes the code a lot simpler and allows for using more up-to-date
+  dependencies
+- Will now have accurate headers logged (including body size)
+
 # 0.4.3 (released on 2019-11-14)
 
 - Improve verbose output in some corner cases
