@@ -20,7 +20,7 @@ pub struct Args {
     pub port: u16,
 
     /// Headers to send (format: key:value)
-    #[clap(short, long, parse(try_from_str = parse_header))]
+    #[clap(short = 'H', long, parse(try_from_str = parse_header))]
     pub headers: Vec<HeaderMap>,
 
     /// HTTP status code to send
