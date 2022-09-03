@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+
+## [0.6.0] - 2022-09-03
 - Add [Tera](https://tera.netlify.app/) templating to body responses.
 
 ## [0.5.0] - 2022-08-24
@@ -44,4 +46,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Print body (#13)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/0.5.0...HEAD
+[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/svenstaro/dummyhttp/compare/0.5.0...v0.6.0

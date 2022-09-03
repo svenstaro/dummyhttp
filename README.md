@@ -98,7 +98,7 @@ Example with color:
 
 ## Full options
 
-    dummyhttp 0.5.0
+    dummyhttp 0.6.0
     Sven-Hendrik Haase <svenstaro@gmail.com>
     Super simple HTTP server that replies with a fixed body and a fixed response code
 
