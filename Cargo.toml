@@ -28,9 +28,12 @@ clap_mangen = "0.1"
 colored = "2"
 colored_json = "2"
 hyper = { version = "0.14" }
+lipsum = "0.8"
 serde_json = "1.0"
+tera = "1"
 tokio = { version = "1.0" }
 tower = { version = "0.4", features = ["util", "filter"] }
+uuid = { version = "1", features = ["v4"] }
 
 [dev-dependencies]
 assert_cmd = "2.0"
