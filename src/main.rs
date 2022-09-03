@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::{collections::HashMap, net::SocketAddr};
 
 use anyhow::{Context, Result};
 use axum::{
@@ -22,6 +22,18 @@ use crate::args::Args;
 
 mod args;
 
+pub fn template_uuid(_args: &HashMap<String, tera::Value>) -> tera::Result<tera::Value> {
+    Ok(tera::to_value(uuid::Uuid::new_v4().to_string()).unwrap())
+}
+
+pub fn template_lorem(args: &HashMap<String, tera::Value>) -> tera::Result<tera::Value> {
+    let n_words = args
+        .get("words")
+        .and_then(|w| w.as_u64())
+        .ok_or::<tera::Error>("oh shit".into())?;
+    Ok(tera::to_value(lipsum::lipsum(n_words as usize)).unwrap())
+}
+
 /// dummyhttp only has a single response and this is it :)
 async fn dummy_response(_uri: Uri, Extension(args): Extension<Args>) -> impl IntoResponse {
     let status_code = StatusCode::from_u16(args.code).unwrap();
@@ -36,7 +48,13 @@ async fn dummy_response(_uri: Uri, Extension(args): Extension<Args>) -> impl Int
     // date is inserted _after_ logging otherwise.
     let time = Local::now();
     headers.insert("date", HeaderValue::from_str(&time.to_rfc2822()).unwrap());
-    (status_code, headers, args.body)
+
+    // Render body as Tera template.
+    let mut tera = tera::Tera::default();
+    tera.register_function("uuid", template_uuid);
+    tera.register_function("lorem", template_lorem);
+    let rendered_body = tera.render_str(&args.body, &tera::Context::new()).unwrap();
+    (status_code, headers, rendered_body)
 }
 
 async fn print_request_response(

@@ -106,18 +106,51 @@ Example with color:
         dummyhttp [OPTIONS]
 
     OPTIONS:
-        -b, --body <BODY>              HTTP body to send [default: dummyhttp]
-        -c, --code <CODE>              HTTP status code to send [default: 200]
-            --cert <TLS_CERT>          TLS cert to use
-        -h, --headers <HEADERS>        Headers to send (format: key:value)
-            --help                     Print help information
-        -i, --interface <INTERFACE>    Interface to bind to [default: 0.0.0.0]
-            --key <TLS_KEY>            TLS key to use
-        -p, --port <PORT>              Port on which to listen [default: 8080]
-        -q, --quiet                    Be quiet (log nothing)
-        -v, --verbose                  Be verbose (log data of incoming and outgoing requests). If given twice it will also log the body
-                                       data
-        -V, --version                  Print version information
+        -b, --body <BODY>
+                HTTP body to send
+
+                Supports Tera-based templating (https://tera.netlify.app/docs/) with a few additional functions over the default
+                built-ins: uuid() - generate a random UUID lorem(words) - generate `words` lorem ipsum words
+
+                Example: dummyhttp -b "Hello {{ uuid() }}, it's {{ now() | date(format="%Y") }} {{ lorem(words=5)}}"
+
+                [default: dummyhttp]
+
+        -c, --code <CODE>
+                HTTP status code to send
+
+                [default: 200]
+
+            --cert <TLS_CERT>
+                TLS cert to use
+
+        -h, --help
+                Print help information
+
+        -H, --headers <HEADERS>
+                Headers to send (format: key:value)
+
+        -i, --interface <INTERFACE>
+                Interface to bind to
+
+                [default: 0.0.0.0]
+
+            --key <TLS_KEY>
+                TLS key to use
+
+        -p, --port <PORT>
+                Port on which to listen
+
+                [default: 8080]
+
+        -q, --quiet
+                Be quiet (log nothing)
+
+        -v, --verbose
+                Be verbose (log data of incoming and outgoing requests). If given twice it will also log the body data
+
+        -V, --version
+                Print version information
 
 ## Releasing
 
