@@ -156,8 +156,9 @@ Example with color:
 
 This is mostly a note for me on how to release this thing:
 
-- Update version in `Cargo.toml` and `README.md`
-- `git commit` and `git tag -s`, `git push`
-- Run `cargo publish`
-- Releases will be built and deployed automatically by GitHub Actions
-- Update AUR package
+- Make sure `CHANGELOG.md` is up to date.
+- `cargo release <version>`
+- `cargo release --execute <version>`
+- Releases will automatically be deployed by Github Actions.
+- Docker images will automatically be built by Docker Hub.
+- Update Arch package.
