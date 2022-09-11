@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Use ubuntu base image for container images
 
 ## [0.6.2] - 2022-09-11
 - Update dependencies
