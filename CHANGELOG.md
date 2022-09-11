@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Update dependencies
+- Modernize CI
+- Build and release more architectures on GitHub and Docker Hub
 
 ## [0.6.0] - 2022-09-03
 - Add [Tera](https://tera.netlify.app/) templating to body responses.
