@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.3.1] - 2019-09-13
 
-- Fix output being different for body/non-body requets
+- Fix output being different for body/non-body requests
 
 ## [0.3.0] - 2019-09-12
 
