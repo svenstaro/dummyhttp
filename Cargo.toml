@@ -1,6 +1,6 @@
 [package]
 name = "dummyhttp"
-version = "0.6.2"
+version = "1.0.0"
 description = "Super simple HTTP server that replies with a fixed body and a fixed response code"
 authors = ["Sven-Hendrik Haase <svenstaro@gmail.com>"]
 repository = "https://github.com/svenstaro/dummyhttp"

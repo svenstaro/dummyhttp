@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+
+## [1.0.0] - 2022-09-11
 - Use ubuntu base image for container images
 
 ## [0.6.2] - 2022-09-11
@@ -52,6 +54,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Print body (#13)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v0.6.2...HEAD
+[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/svenstaro/dummyhttp/compare/v0.6.2...v1.0.0
 [0.6.2]: https://github.com/svenstaro/dummyhttp/compare/v0.6.0...v0.6.2
 [0.6.0]: https://github.com/svenstaro/dummyhttp/compare/0.5.0...v0.6.0
