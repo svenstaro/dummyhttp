@@ -1,8 +1,7 @@
 # dummyhttp
 
-[![GitHub Actions Workflow](https://github.com/svenstaro/dummyhttp/workflows/Build/badge.svg)](https://github.com/svenstaro/dummyhttp/actions)
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/svenstaro/dummyhttp)](https://cloud.docker.com/repository/docker/svenstaro/dummyhttp/)
-[![AUR](https://img.shields.io/aur/version/dummyhttp.svg)](https://aur.archlinux.org/packages/dummyhttp/)
+[![CI](https://github.com/svenstaro/dummyhttp/workflows/CI/badge.svg)](https://github.com/svenstaro/dummyhttp/actions)
+[![Docker Hub](https://img.shields.io/docker/pulls/svenstaro/dummyhttp)](https://cloud.docker.com/repository/docker/svenstaro/dummyhttp/)
 [![Crates.io](https://img.shields.io/crates/v/dummyhttp.svg)](https://crates.io/crates/dummyhttp)
 [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/svenstaro/dummyhttp/blob/master/LICENSE)
 [![Lines of Code](https://tokei.rs/b1/github/svenstaro/dummyhttp)](https://github.com/svenstaro/dummyhttp)
