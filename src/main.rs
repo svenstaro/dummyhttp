@@ -30,7 +30,7 @@ pub fn template_lorem(args: &HashMap<String, tera::Value>) -> tera::Result<tera:
     let n_words = args
         .get("words")
         .and_then(|w| w.as_u64())
-        .ok_or::<tera::Error>("oh shit".into())?;
+        .ok_or_else(|| tera::Error::from("Failed to template lorem"))?;
     Ok(tera::to_value(lipsum::lipsum(n_words as usize)).unwrap())
 }
 
