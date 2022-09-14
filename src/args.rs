@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, ValueHint};
 use hyper::header::{HeaderMap, HeaderName, HeaderValue};
 use std::net::IpAddr;
 use std::path::PathBuf;
@@ -48,12 +48,14 @@ pub struct Args {
     )]
     pub interface: IpAddr,
 
-    /// TLS cert to use
-    #[clap(long = "cert", requires = "tls-key")]
+    /// TLS certificate to use
+    #[cfg(feature = "tls")]
+    #[clap(long = "tls-cert", alias = "cert", requires = "tls-key", value_hint = ValueHint::FilePath)]
     pub tls_cert: Option<PathBuf>,
 
-    /// TLS key to use
-    #[clap(long = "key", requires = "tls-cert")]
+    /// TLS private key to use
+    #[cfg(feature = "tls")]
+    #[clap(long = "tls-key", alias = "key", requires = "tls-cert", value_hint = ValueHint::FilePath)]
     pub tls_key: Option<PathBuf>,
 }
 

@@ -11,9 +11,9 @@ use utils::{DummyhttpProcess, Error};
 #[test]
 fn tls_works() -> Result<(), Error> {
     let dh = DummyhttpProcess::new(vec![
-        "--cert",
+        "--tls-cert",
         "tests/data/cert.pem",
-        "--key",
+        "--tls-key",
         "tests/data/key.pem",
     ])?;
 
@@ -32,7 +32,7 @@ fn tls_works() -> Result<(), Error> {
 #[test]
 fn wrong_path_cert() -> Result<(), Error> {
     Command::cargo_bin("dummyhttp")?
-        .args(&["--cert", "wrong", "--key", "tests/data/key.pem"])
+        .args(&["--tls-cert", "wrong", "--tls-key", "tests/data/key.pem"])
         .assert()
         .failure()
         .stderr(contains(
@@ -46,7 +46,7 @@ fn wrong_path_cert() -> Result<(), Error> {
 #[test]
 fn wrong_path_key() -> Result<(), Error> {
     Command::cargo_bin("dummyhttp")?
-        .args(&["--cert", "tests/data/cert.pem", "--key", "wrong"])
+        .args(&["--tls-cert", "tests/data/cert.pem", "--tls-key", "wrong"])
         .assert()
         .failure()
         .stderr(contains(
