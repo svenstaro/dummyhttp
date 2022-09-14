@@ -50,7 +50,7 @@ impl DummyhttpProcess {
             sleep(Duration::from_millis(100));
         }
 
-        let proto = if args.into_iter().any(|x| x == "--cert".into()) {
+        let proto = if args.into_iter().any(|x| x == "--tls-cert".into()) {
             "https".to_string()
         } else {
             "http".to_string()

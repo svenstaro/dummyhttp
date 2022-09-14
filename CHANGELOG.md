@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Add more architectures
+- Renamed `--cert` to `--tls-cert` and `--key` to `--tls-key` but the old flags are
+  still usable (though hidden)
 
 ## [1.0.0] - 2022-09-11
 - Use ubuntu base image for container images

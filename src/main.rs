@@ -1,6 +1,10 @@
 use std::{collections::HashMap, net::SocketAddr};
 
+#[cfg(not(feature = "tls"))]
+use anyhow::Result;
+#[cfg(feature = "tls")]
 use anyhow::{Context, Result};
+
 use axum::{
     body::{Body, Bytes},
     extract::ConnectInfo,
@@ -10,6 +14,8 @@ use axum::{
     response::{IntoResponse, Response},
     Extension, Router,
 };
+
+#[cfg(feature = "tls")]
 use axum_server::tls_rustls::RustlsConfig;
 use chrono::Local;
 use clap::{crate_version, Parser};
@@ -245,21 +251,28 @@ async fn main() -> Result<()> {
 
     let addr = SocketAddr::from((args.interface, args.port));
     if !args.quiet {
+        let protocol = {
+            #[cfg(feature = "tls")]
+            if args.tls_cert.is_some() {
+                "https://"
+            } else {
+                "http://"
+            }
+            #[cfg(not(feature = "tls"))]
+            "http://"
+        };
         println!(
             "{}{} {} {}{}",
             "dummyhttp v".bold(),
             crate_version!().bold(),
             "listening on".dimmed(),
-            if args.tls_cert.is_some() {
-                "https://".bold()
-            } else {
-                "http://".bold()
-            },
+            protocol.bold(),
             addr.to_string().bold()
         );
     }
 
     // configure certificate and private key used by https
+    #[cfg(feature = "tls")]
     if let (Some(tls_cert), Some(tls_key)) = (args.tls_cert, args.tls_key) {
         let tls_config = RustlsConfig::from_pem_file(&tls_cert, &tls_key)
             .await
@@ -276,6 +289,10 @@ async fn main() -> Result<()> {
             .serve(app.into_make_service_with_connect_info::<SocketAddr>())
             .await?;
     }
+    #[cfg(not(feature = "tls"))]
+    axum_server::bind(addr)
+        .serve(app.into_make_service_with_connect_info::<SocketAddr>())
+        .await?;
 
     Ok(())
 }
