@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+
+## [1.0.2] - 2022-09-14
 - Add completions (`--print-completions`) and manpage (`--print-manpage`)
 
 ## [1.0.1] - 2022-09-14
@@ -61,7 +63,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Print body (#13)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/svenstaro/dummyhttp/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/svenstaro/dummyhttp/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/svenstaro/dummyhttp/compare/v0.6.2...v1.0.0
 [0.6.2]: https://github.com/svenstaro/dummyhttp/compare/v0.6.0...v0.6.2
