@@ -20,7 +20,7 @@ strip = true
 Inflector = { version = "0.11", default-features = false }
 anyhow = "1"
 axum = { version = "0.5", features = ["http2"] }
-axum-server = { version = "0.4", features = ["tls-rustls"] }
+axum-server = "0.4"
 chrono = "0.4.20"
 clap = { version = "3.2", features = ["derive", "cargo", "wrap_help"] }
 clap_complete = "3.2.3"
@@ -34,6 +34,14 @@ tera = "1"
 tokio = { version = "1.0", features = ["rt-multi-thread"] }
 tower = { version = "0.4", features = ["util", "filter"] }
 uuid = { version = "1", features = ["v4"] }
+
+[features]
+default = ["tls"]
+# This feature allows us to use rustls only on architectures supported by ring.
+# See also https://github.com/briansmith/ring/issues/1182
+# and https://github.com/briansmith/ring/issues/562
+# and https://github.com/briansmith/ring/issues/1367
+tls = ["axum-server/tls-rustls"]
 
 [dev-dependencies]
 assert_cmd = "2.0"

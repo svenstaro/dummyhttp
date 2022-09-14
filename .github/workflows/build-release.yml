@@ -14,33 +14,78 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             cross: true
+            compress: true
+            cargo_flags: ""
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             cross: true
+            compress: true
+            cargo_flags: ""
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
             cross: true
+            compress: true
+            cargo_flags: ""
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             cross: true
+            compress: true
+            cargo_flags: ""
           - os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
             cross: true
+            compress: true
+            cargo_flags: ""
           - os: ubuntu-latest
             target: armv7-unknown-linux-gnueabihf
             cross: true
+            compress: true
+            cargo_flags: ""
           - os: ubuntu-latest
             target: arm-unknown-linux-musleabihf
             cross: true
+            compress: true
+            cargo_flags: ""
+          - os: ubuntu-latest
+            target: mips-unknown-linux-musl
+            cross: true
+            compress: true
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: mipsel-unknown-linux-musl
+            cross: true
+            compress: true
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: mips64-unknown-linux-gnuabi64
+            cross: true
+            compress: false
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: mips64el-unknown-linux-gnuabi64
+            cross: true
+            compress: false
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: riscv64gc-unknown-linux-gnu
+            cross: true
+            compress: false
+            cargo_flags: "--no-default-features"
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             cross: false
+            compress: true
+            cargo_flags: ""
           - os: macos-latest
             target: x86_64-apple-darwin
             cross: false
+            compress: true
+            cargo_flags: ""
           - os: ubuntu-latest
             target: x86_64-unknown-freebsd
             cross: true
+            compress: false
+            cargo_flags: ""
 
     steps:
       - name: Checkout code
@@ -60,7 +105,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --locked --target=${{ matrix.target }}
+          args: --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
           use-cross: ${{ matrix.cross }}
 
       - name: Set exe extension for Windows
@@ -73,7 +118,7 @@ jobs:
           file: target/${{ matrix.target }}/release/dummyhttp${{ env.EXE }}
           args: --best --lzma
           strip: false  # We're stripping already in Cargo.toml
-        if: matrix.target != 'x86_64-unknown-freebsd'
+        if: ${{ matrix.compress }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
