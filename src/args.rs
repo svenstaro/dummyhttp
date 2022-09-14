@@ -1,6 +1,9 @@
-use clap::{Parser, ValueHint};
+use clap::Parser;
+#[cfg(feature = "tls")]
+use clap::ValueHint;
 use hyper::header::{HeaderMap, HeaderName, HeaderValue};
 use std::net::IpAddr;
+#[cfg(feature = "tls")]
 use std::path::PathBuf;
 
 #[derive(Debug, Clone, Parser)]
