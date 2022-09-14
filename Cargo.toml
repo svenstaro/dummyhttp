@@ -31,7 +31,7 @@ hyper = { version = "0.14" }
 lipsum = "0.8"
 serde_json = "1.0"
 tera = "1"
-tokio = { version = "1.0", features = ["rt-multi-thread"] }
+tokio = { version = "1.21", features = ["rt-multi-thread"] }
 tower = { version = "0.4", features = ["util", "filter"] }
 uuid = { version = "1", features = ["v4"] }
 
