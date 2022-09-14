@@ -18,7 +18,7 @@ use axum::{
 #[cfg(feature = "tls")]
 use axum_server::tls_rustls::RustlsConfig;
 use chrono::Local;
-use clap::{crate_version, Parser};
+use clap::{crate_version, CommandFactory, Parser};
 use colored::*;
 use colored_json::ToColoredJson;
 use hyper::{header::CONTENT_TYPE, HeaderMap};
@@ -243,6 +243,20 @@ where
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::from_args();
+
+    if let Some(shell) = args.print_completions {
+        let mut clap_app = args::Args::command();
+        let app_name = clap_app.get_name().to_string();
+        clap_complete::generate(shell, &mut clap_app, app_name, &mut std::io::stdout());
+        return Ok(());
+    }
+
+    if args.print_manpage {
+        let clap_app = args::Args::command();
+        let man = clap_mangen::Man::new(clap_app);
+        man.render(&mut std::io::stdout())?;
+        return Ok(());
+    }
 
     let app = Router::new()
         .fallback(dummy_response.into_service())

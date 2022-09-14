@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Add completions (`--print-completions`) and manpage (`--print-manpage`)
 
 ## [1.0.1] - 2022-09-14
 - Add more architectures

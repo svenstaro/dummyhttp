@@ -51,6 +51,14 @@ pub struct Args {
     )]
     pub interface: IpAddr,
 
+    /// Generate completion file for a shell
+    #[clap(long = "print-completions", value_name = "shell", arg_enum)]
+    pub print_completions: Option<clap_complete::Shell>,
+
+    /// Generate man page
+    #[clap(long = "print-manpage")]
+    pub print_manpage: bool,
+
     /// TLS certificate to use
     #[cfg(feature = "tls")]
     #[clap(long = "tls-cert", alias = "cert", requires = "tls-key", value_hint = ValueHint::FilePath)]
