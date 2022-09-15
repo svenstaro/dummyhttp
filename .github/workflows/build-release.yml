@@ -198,8 +198,6 @@ jobs:
       - name: podman build linux/arm
         run: podman build --format docker --platform linux/arm/v7 --manifest dummyhttp -f Containerfile target/armv7-unknown-linux-gnueabihf/release
 
-      - run: podman manifest inspect dummyhttp
-
       - name: podman manifest push latest
         run: podman manifest push dummyhttp docker.io/svenstaro/dummyhttp:latest
 
