@@ -108,8 +108,8 @@ Example with color:
         -b, --body <BODY>
                 HTTP body to send
 
-                Supports Tera-based templating (https://tera.netlify.app/docs/) with a few additional functions over the default
-                built-ins: uuid() - generate a random UUID lorem(words) - generate `words` lorem ipsum words
+                Supports Tera-based templating (https://tera.netlify.app/docs/) with a few additional functions over the default built-ins: uuid() - generate a random UUID lorem(words) -
+                generate `words` lorem ipsum words
 
                 Example: dummyhttp -b "Hello {{ uuid() }}, it's {{ now() | date(format="%Y") }} {{ lorem(words=5)}}"
 
@@ -119,9 +119,6 @@ Example with color:
                 HTTP status code to send
 
                 [default: 200]
-
-            --cert <TLS_CERT>
-                TLS cert to use
 
         -h, --help
                 Print help information
@@ -134,16 +131,27 @@ Example with color:
 
                 [default: 0.0.0.0]
 
-            --key <TLS_KEY>
-                TLS key to use
-
         -p, --port <PORT>
                 Port on which to listen
 
                 [default: 8080]
 
+            --print-completions <shell>
+                Generate completion file for a shell
+
+                [possible values: bash, elvish, fish, powershell, zsh]
+
+            --print-manpage
+                Generate man page
+
         -q, --quiet
                 Be quiet (log nothing)
+
+            --tls-cert <TLS_CERT>
+                TLS certificate to use
+
+            --tls-key <TLS_KEY>
+                TLS private key to use
 
         -v, --verbose
                 Be verbose (log data of incoming and outgoing requests). If given twice it will also log the body data
