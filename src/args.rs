@@ -34,11 +34,12 @@ pub struct Args {
     ///
     /// Supports Tera-based templating (https://tera.netlify.app/docs/) with a few additional
     /// functions over the default built-ins:
+    ///
     /// uuid() - generate a random UUID
     /// lorem(words) - generate `words` lorem ipsum words
     ///
     /// Example: dummyhttp -b "Hello {{ uuid() }}, it's {{ now() | date(format="%Y") }} {{ lorem(words=5)}}"
-    #[clap(short, long, default_value = "dummyhttp")]
+    #[clap(short, long, default_value = "dummyhttp", verbatim_doc_comment)]
     pub body: String,
 
     /// Interface to bind to
