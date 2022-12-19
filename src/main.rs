@@ -8,7 +8,6 @@ use anyhow::{Context, Result};
 use axum::{
     body::{Body, Bytes},
     extract::ConnectInfo,
-    handler::Handler,
     http::{HeaderValue, Request, StatusCode, Uri},
     middleware::{self, Next},
     response::{IntoResponse, Response},
@@ -259,7 +258,7 @@ async fn main() -> Result<()> {
     }
 
     let app = Router::new()
-        .fallback(dummy_response.into_service())
+        .fallback(dummy_response)
         .layer(middleware::from_fn(print_request_response))
         .layer(Extension(args.clone()));
 
