@@ -24,7 +24,7 @@ axum-server = "0.4"
 chrono = "0.4.20"
 clap = { version = "3.2", features = ["derive", "cargo", "wrap_help"] }
 clap_complete = "3.2.3"
-clap_mangen = "0.1"
+clap_mangen = "0.2"
 colored = "2"
 colored_json = "3"
 hyper = { version = "0.14" }
