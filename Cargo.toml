@@ -22,7 +22,7 @@ anyhow = "1"
 axum = { version = "0.6", features = ["http2"] }
 axum-server = "0.4"
 chrono = "0.4.20"
-clap = { version = "3.2", features = ["derive", "cargo", "wrap_help"] }
+clap = { version = "4.1", features = ["derive", "cargo", "wrap_help"] }
 clap_complete = "3.2.3"
 clap_mangen = "0.1"
 colored = "2"
