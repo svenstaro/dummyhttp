@@ -17,61 +17,47 @@ HTTP/2 support included.
 
 ### Log all incoming request data
 
-    dummyhttp --verbose
-    curl -X POST localhost:8080 -d hi
-    # ┌─Incoming request
-    # │ POST / HTTP/1.1
-    # │ Accept: */*
-    # │ Content-Length: 2
-    # │ Host: localhost:8080
-    # │ User-Agent: curl/7.66.0
-    # │ Content-Type: application/x-www-form-urlencoded
-    # │ Body:
-    # hi
-
-Example with color:
-
 ![Pretty log](pretty_log.png)
 
 ### Running with no arguments always returns 200 on all interfaces at port 8080
 
     dummyhttp
-    curl -v localhost:8080
+    curl -vv localhost:8080
     # < HTTP/1.1 200 OK
     # < content-length: 10
     # < date: Sat, 09 Jun 2018 13:56:14 GMT
-    # <
+    # Body:
     # dummyhttp
 
 ### Always emit 400 Bad Request
 
     dummyhttp -c 400
-    curl -v localhost:8080
+    curl -vv localhost:8080
     # < HTTP/1.1 400 Bad Request
     # < content-length: 10
     # < date: Sat, 09 Jun 2018 13:57:53 GMT
-    # <
+    # Body:
     # dummyhttp
 
 ### Always return a certain string
 
     dummyhttp -b "Hello World"
-    curl -v localhost:8080
+    curl -vv localhost:8080
     # < HTTP/1.1 200 OK
     # < content-length: 12
     # < date: Sat, 09 Jun 2018 13:58:57 GMT
-    # <
+    # Body:
     # Hello World
 
 ### Return a specific header
 
     dummyhttp -b '{"Hello": "World"}' -H "content-type:application/json"
-    curl -v localhost:8080
+    curl -vv localhost:8080
     # < HTTP/1.1 200 OK
     # < content-type: application/json
     # < date: Wed, 24 Aug 2022 00:55:35 +0200
     # < content-length: 18
-    # <
+    # Body:
     # {"Hello": "World"}
 
 ## How to install
