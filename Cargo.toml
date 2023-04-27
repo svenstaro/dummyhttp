@@ -1,6 +1,6 @@
 [package]
 name = "dummyhttp"
-version = "1.0.2"
+version = "1.0.3"
 description = "Super simple HTTP server that replies with a fixed body and a fixed response code"
 authors = ["Sven-Hendrik Haase <svenstaro@gmail.com>"]
 repository = "https://github.com/svenstaro/dummyhttp"
@@ -22,13 +22,13 @@ anyhow = "1"
 axum = { version = "0.6", features = ["http2"] }
 axum-server = "0.4"
 chrono = "0.4.20"
-clap = { version = "3.2", features = ["derive", "cargo", "wrap_help"] }
-clap_complete = "3.2.3"
-clap_mangen = "0.1"
+clap = { version = "4", features = ["derive", "cargo", "wrap_help"] }
+clap_complete = "4"
+clap_mangen = "0.2"
 colored = "2"
 colored_json = "3"
 hyper = { version = "0.14" }
-lipsum = "0.8"
+lipsum = "0.9"
 serde_json = "1.0"
 tera = "1"
 tokio = { version = "1.21", features = ["rt-multi-thread"] }
@@ -46,8 +46,8 @@ tls = ["axum-server/tls-rustls"]
 [dev-dependencies]
 assert_cmd = "2.0"
 port_check = "0.1"
-predicates = "2"
+predicates = "3"
 pretty_assertions = "1.2"
 reqwest = { version = "0.11", features = ["blocking", "rustls-tls"], default-features = false }
-rstest = "0.16"
+rstest = "0.17"
 url = "2.2"

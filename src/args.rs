@@ -7,27 +7,27 @@ use std::net::IpAddr;
 use std::path::PathBuf;
 
 #[derive(Debug, Clone, Parser)]
-#[clap(name = "dummyhttp", author, about, version)]
+#[command(name = "dummyhttp", author, about, version)]
 pub struct Args {
     /// Be quiet (log nothing)
-    #[clap(short, long)]
+    #[arg(short, long)]
     pub quiet: bool,
 
     /// Be verbose (log data of incoming and outgoing requests). If given twice it will also log
     /// the body data.
-    #[clap(short, long, parse(from_occurrences))]
+    #[arg(short, long, action = clap::ArgAction::Count)]
     pub verbose: u8,
 
     /// Port on which to listen
-    #[clap(short, long, default_value = "8080")]
+    #[arg(short, long, default_value = "8080")]
     pub port: u16,
 
     /// Headers to send (format: key:value)
-    #[clap(short = 'H', long, parse(try_from_str = parse_header))]
+    #[arg(short = 'H', long, value_parser(parse_header))]
     pub headers: Vec<HeaderMap>,
 
     /// HTTP status code to send
-    #[clap(short, long, default_value = "200")]
+    #[arg(short, long, default_value = "200")]
     pub code: u16,
 
     /// HTTP body to send
@@ -39,35 +39,35 @@ pub struct Args {
     /// lorem(words) - generate `words` lorem ipsum words
     ///
     /// Example: dummyhttp -b "Hello {{ uuid() }}, it's {{ now() | date(format="%Y") }} {{ lorem(words=5)}}"
-    #[clap(short, long, default_value = "dummyhttp", verbatim_doc_comment)]
+    #[arg(short, long, default_value = "dummyhttp", verbatim_doc_comment)]
     pub body: String,
 
     /// Interface to bind to
-    #[clap(
+    #[arg(
         short,
         long,
-        parse(try_from_str = parse_interface),
+        value_parser(parse_interface),
         number_of_values = 1,
         default_value = "0.0.0.0"
     )]
     pub interface: IpAddr,
 
     /// Generate completion file for a shell
-    #[clap(long = "print-completions", value_name = "shell", arg_enum)]
+    #[arg(long = "print-completions", value_name = "shell")]
     pub print_completions: Option<clap_complete::Shell>,
 
     /// Generate man page
-    #[clap(long = "print-manpage")]
+    #[arg(long = "print-manpage")]
     pub print_manpage: bool,
 
     /// TLS certificate to use
     #[cfg(feature = "tls")]
-    #[clap(long = "tls-cert", alias = "cert", requires = "tls-key", value_hint = ValueHint::FilePath)]
+    #[arg(long = "tls-cert", alias = "cert", requires = "tls_key", value_hint = ValueHint::FilePath)]
     pub tls_cert: Option<PathBuf>,
 
     /// TLS private key to use
     #[cfg(feature = "tls")]
-    #[clap(long = "tls-key", alias = "key", requires = "tls-cert", value_hint = ValueHint::FilePath)]
+    #[arg(long = "tls-key", alias = "key", requires = "tls_cert", value_hint = ValueHint::FilePath)]
     pub tls_key: Option<PathBuf>,
 }
 

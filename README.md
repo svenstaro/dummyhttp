@@ -83,70 +83,67 @@ HTTP/2 support included.
 
 ## Full options
 
-    dummyhttp 1.0.2
-    Sven-Hendrik Haase <svenstaro@gmail.com>
     Super simple HTTP server that replies with a fixed body and a fixed response code
 
-    USAGE:
-        dummyhttp [OPTIONS]
+    Usage: dummyhttp [OPTIONS]
 
-    OPTIONS:
-        -b, --body <BODY>
-                HTTP body to send
+    Options:
+      -q, --quiet
+              Be quiet (log nothing)
 
-                Supports Tera-based templating (https://tera.netlify.app/docs/) with a few additional
-                functions over the default built-ins:
+      -v, --verbose...
+              Be verbose (log data of incoming and outgoing requests). If given twice it will also log the body data
 
-                uuid() - generate a random UUID
-                lorem(words) - generate `words` lorem ipsum words
+      -p, --port <PORT>
+              Port on which to listen
 
-                Example: dummyhttp -b "Hello {{ uuid() }}, it's {{ now() | date(format="%Y") }} {{ lorem(words=5)}}"
+              [default: 8080]
 
-                [default: dummyhttp]
+      -H, --headers <HEADERS>
+              Headers to send (format: key:value)
 
-        -c, --code <CODE>
-                HTTP status code to send
+      -c, --code <CODE>
+              HTTP status code to send
 
-                [default: 200]
+              [default: 200]
 
-        -h, --help
-                Print help information
+      -b, --body <BODY>
+              HTTP body to send
 
-        -H, --headers <HEADERS>
-                Headers to send (format: key:value)
+              Supports Tera-based templating (https://tera.netlify.app/docs/) with a few additional
+              functions over the default built-ins:
 
-        -i, --interface <INTERFACE>
-                Interface to bind to
+              uuid() - generate a random UUID
+              lorem(words) - generate `words` lorem ipsum words
 
-                [default: 0.0.0.0]
+              Example: dummyhttp -b "Hello {{ uuid() }}, it's {{ now() | date(format="%Y") }} {{ lorem(words=5)}}"
 
-        -p, --port <PORT>
-                Port on which to listen
+              [default: dummyhttp]
 
-                [default: 8080]
+      -i, --interface <INTERFACE>
+              Interface to bind to
 
-            --print-completions <shell>
-                Generate completion file for a shell
+              [default: 0.0.0.0]
 
-                [possible values: bash, elvish, fish, powershell, zsh]
+          --print-completions <shell>
+              Generate completion file for a shell
 
-            --print-manpage
-                Generate man page
+              [possible values: bash, elvish, fish, powershell, zsh]
 
-        -q, --quiet
-                Be quiet (log nothing)
+          --print-manpage
+              Generate man page
 
-            --tls-cert <TLS_CERT>
-                TLS certificate to use
+          --tls-cert <TLS_CERT>
+              TLS certificate to use
 
-            --tls-key <TLS_KEY>
-                TLS private key to use
+          --tls-key <TLS_KEY>
+              TLS private key to use
 
-        -v, --verbose
-                Be verbose (log data of incoming and outgoing requests). If given twice it will also log the body data
+      -h, --help
+              Print help (see a summary with '-h')
 
-        -V, --version
-                Print version information
+      -V, --version
+              Print version
 
 ## Releasing
 

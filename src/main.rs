@@ -241,7 +241,7 @@ where
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let args = Args::from_args();
+    let args = Args::parse();
 
     if let Some(shell) = args.print_completions {
         let mut clap_app = args::Args::command();
