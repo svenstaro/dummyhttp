@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Update dependencies
+- Build binary for aarch64-apple-darwin
 
 ## [1.0.2] - 2022-09-14
 - Add completions (`--print-completions`) and manpage (`--print-manpage`)

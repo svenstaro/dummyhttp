@@ -62,19 +62,16 @@ HTTP/2 support included.
 
 ## How to install
 
-**On Linux**: Download `dummyhttp-linux-amd64` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
+**Static builds**: These offered for **Linux**, **OSX**, and **Windows** in various architectures over at the [the releases page](https://github.com/svenstaro/dummyhttp/releases).
+Grab a binary corresponding to your architecture.
 
-    chmod +x dummyhttp-linux-amd64
-    ./dummyhttp-linux-amd64
+On Linux and OSX, you need to run `chmod +x` on the binary to be able to run it. For example:
 
-**On macOS**: Download `dummyhttp-macos-amd64` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
+    chmod +x dummyhttp-1.0.2-x86_64-unknown-linux-musl
 
-    chmod +x dummyhttp-macos-amd64
-    ./dummyhttp-macos-amd64
+Afterwards, you can run it:
 
-**On Windows**: Download `dummyhttp-windows-amd64.exe` from [the releases page](https://github.com/svenstaro/dummyhttp/releases) and run
-
-    dummyhttp-windows-amd64.exe
+    ./dummyhttp-1.0.2-x86_64-unknown-linux-musl
 
 **With Cargo**: If you have a somewhat recent version of Rust and Cargo installed, you can run
 
