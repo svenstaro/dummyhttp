@@ -17,6 +17,8 @@ HTTP/2 support included.
 
 ### Log all incoming request data
 
+Running `dummyhttp -vv` results in this neat output:
+
 ![Pretty log](pretty_log.png)
 
 ### Running with no arguments always returns 200 on all interfaces at port 8080
