@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+
+## [1.0.3] - 2023-04-28
 - Update dependencies
 - Build binary for aarch64-apple-darwin
 
@@ -65,7 +67,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Print body (#13)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/svenstaro/dummyhttp/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/svenstaro/dummyhttp/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/svenstaro/dummyhttp/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/svenstaro/dummyhttp/compare/v0.6.2...v1.0.0
