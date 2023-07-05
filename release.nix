@@ -10,7 +10,7 @@ let
 
   dummyhttp = pkgs.callPackage ./nix/build.nix {inherit crane rustToolChain advisory-db;};
 in {
-  inherit (dummyhttp) default doc;
+  inherit (dummyhttp) default doc container;
   checks = {
     inherit (dummyhttp.checks) fmt clippy test audit;
   };

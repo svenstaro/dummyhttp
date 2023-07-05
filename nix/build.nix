@@ -38,6 +38,34 @@ in {
 
   doc = dummyhttpDoc;
 
+  container = pkgs.dockerTools.buildImage {
+    name = "dummyhttp";
+    tag = "latest";
+
+    fromImageName = "nginx";
+    fromImageTag = "latest";
+
+    copyToRoot = pkgs.buildEnv {
+      name = "image-root";
+      paths = [dummyhttpCrate];
+      pathsToLink = ["/bin"];
+    };
+
+    # runAsRoot = ''
+    #   #!${pkgs.runtimeShell}
+    #   mkdir -p /data
+    # '';
+
+    config = {
+      Cmd = ["/bin/dummyhttp"];
+      # WorkingDir = "/data";
+      # Volumes = {"/data" = {};};
+    };
+
+    diskSize = 1024;
+    buildVMMemorySize = 512;
+  };
+
   checks = {
     inherit dummyhttpCrate;
 
