@@ -7,3 +7,7 @@
 
 /target
 **/*.rs.bk
+
+result/
+result
+result-*
