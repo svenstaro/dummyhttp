@@ -1,0 +1,50 @@
+{
+    "advisory-db": {
+        "branch": "main",
+        "description": "Security advisory database for Rust crates published through crates.io",
+        "homepage": "https://rustsec.org",
+        "owner": "rustsec",
+        "repo": "advisory-db",
+        "rev": "1f538e6f3b8ad37e89b1386e06be080fbe474b3c",
+        "sha256": "08yms64b4qfn60aa9ylay2fc06z5pwzr5p7l9g1zafjk4iclk297",
+        "type": "tarball",
+        "url": "https://github.com/rustsec/advisory-db/archive/1f538e6f3b8ad37e89b1386e06be080fbe474b3c.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "crane": {
+        "branch": "master",
+        "description": "A Nix library for building cargo projects. Never build twice thanks to incremental artifact caching.",
+        "homepage": "https://crane.dev",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "fc6a236548b31aef0be3b0a0377c4459bb39d923",
+        "sha256": "1bgwrywwa1p92yd17n42c841mphk93h0i9qk3byya3pnxs76f5hf",
+        "type": "tarball",
+        "url": "https://github.com/ipetkov/crane/archive/fc6a236548b31aef0be3b0a0377c4459bb39d923.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs": {
+        "branch": "nixos-unstable",
+        "description": "Nix Packages collection",
+        "homepage": null,
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "6c43a3495a11e261e5f41e5d7eda2d71dae1b2fe",
+        "sha256": "16f329z831bq7l3wn1dfvbkh95l2gcggdwn6rk3cisdmv2aa3189",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/6c43a3495a11e261e5f41e5d7eda2d71dae1b2fe.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "rust-overlay": {
+        "branch": "master",
+        "description": "Pure and reproducible nix overlay of binary distributed rust toolchains",
+        "homepage": "",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "ab050286f18ea354bfe7a49ca8ddcbd633cae1ca",
+        "sha256": "153mczhjwp445g0y1lz5fldbanfnwny93xvb7m5b53cafalswmhh",
+        "type": "tarball",
+        "url": "https://github.com/oxalica/rust-overlay/archive/ab050286f18ea354bfe7a49ca8ddcbd633cae1ca.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
