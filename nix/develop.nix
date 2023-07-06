@@ -7,10 +7,10 @@ pkgs.mkShell rec {
   nativeBuildInputs = with pkgs; [
     cargo
     clippy
-    glib
-    openssl
+    #glib
+    #openssl
     #pkg-config
-    pkgconfig
+    #pkgconfig
     rustc
     rustfmt
     rustToolChain

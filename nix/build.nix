@@ -13,12 +13,12 @@
     pname = "dummyhttp";
     version = "1.0.3";
 
-    nativeBuildInputs = with pkgs; [
-      cmake
-      fontconfig
-      openssl
-      pkgconfig
-    ];
+    #nativeBuildInputs = with pkgs; [
+    #  cmake
+    #  fontconfig
+    #  openssl
+    #  pkgconfig
+    #];
     doCheck = false;
   };
 
