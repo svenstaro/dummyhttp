@@ -13,12 +13,6 @@
     pname = "dummyhttp";
     version = "1.0.3";
 
-    #nativeBuildInputs = with pkgs; [
-    #  cmake
-    #  fontconfig
-    #  openssl
-    #  pkgconfig
-    #];
     doCheck = false;
   };
 
@@ -51,15 +45,8 @@ in {
       pathsToLink = ["/bin"];
     };
 
-    # runAsRoot = ''
-    #   #!${pkgs.runtimeShell}
-    #   mkdir -p /data
-    # '';
-
     config = {
       Cmd = ["/bin/dummyhttp"];
-      # WorkingDir = "/data";
-      # Volumes = {"/data" = {};};
     };
 
     diskSize = 1024;
