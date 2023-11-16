@@ -403,11 +403,10 @@ dependencies = [
 
 [[package]]
 name = "colored_json"
-version = "3.2.0"
+version = "4.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74cb9ce6b86f6e54bfa9518df2eeeef65d424ec7244d083ed97229185e366a91"
+checksum = "79cff32df5cfea75e6484eeff0b4e48ad3977fb6582676a7862b3590dddc7a87"
 dependencies = [
- "is-terminal",
  "serde",
  "serde_json",
  "yansi",
