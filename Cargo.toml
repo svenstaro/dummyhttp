@@ -27,7 +27,7 @@ clap_complete = "4"
 clap_mangen = "0.2"
 colored = "2"
 colored_json = "4"
-hyper = { version = "0.14" }
+hyper = { version = "1.0" }
 lipsum = "0.9"
 serde_json = "1.0"
 tera = "1"
