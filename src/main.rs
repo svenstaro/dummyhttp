@@ -7,8 +7,8 @@ use anyhow::{Context, Result};
 
 use axum::{
     body::{Body, Bytes},
-    extract::ConnectInfo,
-    http::{HeaderValue, Request, StatusCode, Uri},
+    extract::{ConnectInfo, Request},
+    http::{HeaderValue, StatusCode, Uri},
     middleware::{self, Next},
     response::{IntoResponse, Response},
     Extension, Router,
@@ -63,8 +63,8 @@ async fn dummy_response(_uri: Uri, Extension(args): Extension<Args>) -> impl Int
 }
 
 async fn print_request_response(
-    req: Request<Body>,
-    next: Next<Body>,
+    req: Request,
+    next: Next,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let args = req.extensions().get::<Args>().unwrap().clone();
     let ConnectInfo(peer_info) = *req.extensions().get::<ConnectInfo<SocketAddr>>().unwrap();
@@ -221,12 +221,8 @@ async fn print_request_response(
     Ok(resp)
 }
 
-async fn buffer_and_print<B>(direction: &str, body: B) -> Result<Bytes, (StatusCode, String)>
-where
-    B: axum::body::HttpBody<Data = Bytes>,
-    B::Error: std::fmt::Display,
-{
-    let bytes = match hyper::body::to_bytes(body).await {
+async fn buffer_and_print(direction: &str, body: Body) -> Result<Bytes, (StatusCode, String)> {
+    let bytes = match axum::body::to_bytes(body, usize::MAX).await {
         Ok(bytes) => bytes,
         Err(err) => {
             return Err((
