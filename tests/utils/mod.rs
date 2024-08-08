@@ -11,7 +11,6 @@ pub type Error = Box<dyn std::error::Error>;
 #[derive(Debug)]
 pub struct DummyhttpProcess {
     pub child: Child,
-    pub port: String,
     pub url: String,
 }
 
@@ -57,6 +56,6 @@ impl DummyhttpProcess {
         };
         let url = format!("{proto}://localhost:{port}", proto = proto, port = port);
 
-        Ok(DummyhttpProcess { child, port, url })
+        Ok(DummyhttpProcess { child, url })
     }
 }
