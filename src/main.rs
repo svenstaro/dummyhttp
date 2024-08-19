@@ -61,7 +61,7 @@ async fn dummy_response(_uri: Uri, Extension(args): Extension<Args>) -> impl Int
     tera.register_function("lorem", template_lorem);
     let rendered_body = tera.render_str(&args.body, &tera::Context::new()).unwrap();
 
-    
+    // Delay response.
     sleep(Duration::from_millis(args.delay)).await;
 
     (status_code, headers, rendered_body)
