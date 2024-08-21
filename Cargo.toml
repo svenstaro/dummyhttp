@@ -32,7 +32,7 @@ lipsum = "0.9"
 serde_json = "1.0"
 tera = "1"
 tokio = { version = "1.28", features = ["rt-multi-thread"] }
-tower = { version = "0.4", features = ["util", "filter"] }
+tower = { version = "0.5", features = ["util", "filter"] }
 uuid = { version = "1", features = ["v4"] }
 
 [features]
@@ -49,5 +49,5 @@ port_check = "0.2"
 predicates = "3"
 pretty_assertions = "1.2"
 reqwest = { version = "0.12", features = ["blocking", "rustls-tls"], default-features = false }
-rstest = "0.21"
+rstest = "0.22"
 url = "2.5"
