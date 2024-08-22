@@ -121,3 +121,28 @@ fn returns_custom_headers(method: Method) -> Result<(), Error> {
 
     Ok(())
 }
+
+/// Setting a custom delay will delay the response making it at least that long.
+#[rstest(
+    method,
+    case::get(Method::GET),
+    case::post(Method::POST),
+    case::put(Method::PUT),
+    case::delete(Method::DELETE),
+    case::options(Method::OPTIONS),
+    case::patch(Method::PATCH),
+)]
+fn returns_custom_delay(method: Method) -> Result<(), Error> {
+    let dh = DummyhttpProcess::new(vec!["-d", "1000"])?;
+
+    let client = Client::new();
+    let start = std::time::Instant::now();
+    let resp = client.request(method, &dh.url).send()?;
+    let elapsed = start.elapsed();
+
+    assert_eq!(resp.status(), StatusCode::OK);
+    assert!(elapsed >= std::time::Duration::from_millis(1000));
+    assert_eq!(resp.text()?, "dummyhttp");
+
+    Ok(())
+}

@@ -22,6 +22,7 @@ use colored::*;
 use colored_json::ToColoredJson;
 use hyper::{header::CONTENT_TYPE, HeaderMap};
 use inflector::Inflector;
+use tokio::time::{sleep, Duration};
 
 use crate::args::Args;
 
@@ -59,6 +60,10 @@ async fn dummy_response(_uri: Uri, Extension(args): Extension<Args>) -> impl Int
     tera.register_function("uuid", template_uuid);
     tera.register_function("lorem", template_lorem);
     let rendered_body = tera.render_str(&args.body, &tera::Context::new()).unwrap();
+
+    // Delay response.
+    sleep(Duration::from_millis(args.delay)).await;
+
     (status_code, headers, rendered_body)
 }
 
