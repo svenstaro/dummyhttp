@@ -283,6 +283,10 @@ async fn main() -> Result<()> {
     // configure certificate and private key used by https
     #[cfg(feature = "tls")]
     if let (Some(tls_cert), Some(tls_key)) = (args.tls_cert, args.tls_key) {
+        rustls::crypto::ring::default_provider()
+            .install_default()
+            .expect("Failed to install rustls crypto provider");
+
         let tls_config = RustlsConfig::from_pem_file(&tls_cert, &tls_key)
             .await
             .context(format!(
