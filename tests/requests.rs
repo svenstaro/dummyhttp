@@ -4,10 +4,11 @@ use axum::http::{self, Method, StatusCode};
 use chrono::DateTime;
 use reqwest::blocking::Client;
 use rstest::rstest;
+use rstest_reuse::{self, apply, template};
 use utils::{DummyhttpProcess, Error};
 use uuid::Uuid;
 
-/// By default, we expect a 200 OK answer with a "dummyhttp" text body.
+#[template]
 #[rstest(
     method,
     case::get(Method::GET),
@@ -17,6 +18,10 @@ use uuid::Uuid;
     case::options(Method::OPTIONS),
     case::patch(Method::PATCH)
 )]
+fn http_methods(method: http::Method) {}
+
+/// By default, we expect a 200 OK answer with a "dummyhttp" text body.
+#[apply(http_methods)]
 fn serves_requests_with_no_options(method: http::Method) -> Result<(), Error> {
     let dh = DummyhttpProcess::new(Vec::<String>::new())?;
 
@@ -30,15 +35,7 @@ fn serves_requests_with_no_options(method: http::Method) -> Result<(), Error> {
 }
 
 /// Setting a custom body will always answer with that body.
-#[rstest(
-    method,
-    case::get(Method::GET),
-    case::post(Method::POST),
-    case::put(Method::PUT),
-    case::delete(Method::DELETE),
-    case::options(Method::OPTIONS),
-    case::patch(Method::PATCH)
-)]
+#[apply(http_methods)]
 fn returns_custom_body(method: Method) -> Result<(), Error> {
     let dh = DummyhttpProcess::new(vec!["-b", "hi test"])?;
 
@@ -52,15 +49,7 @@ fn returns_custom_body(method: Method) -> Result<(), Error> {
 }
 
 /// Setting a custom body with Tera templating will template fine.
-#[rstest(
-    method,
-    case::get(Method::GET),
-    case::post(Method::POST),
-    case::put(Method::PUT),
-    case::delete(Method::DELETE),
-    case::options(Method::OPTIONS),
-    case::patch(Method::PATCH)
-)]
+#[apply(http_methods)]
 fn returns_templated_body(method: Method) -> Result<(), Error> {
     let dh = DummyhttpProcess::new(vec!["-b", "{{ uuid() }} {{ now() }} {{ lorem(words=5)}}"])?;
 
@@ -78,15 +67,7 @@ fn returns_templated_body(method: Method) -> Result<(), Error> {
 }
 
 /// Setting a custom code will always answer with that code.
-#[rstest(
-    method,
-    case::get(Method::GET),
-    case::post(Method::POST),
-    case::put(Method::PUT),
-    case::delete(Method::DELETE),
-    case::options(Method::OPTIONS),
-    case::patch(Method::PATCH)
-)]
+#[apply(http_methods)]
 fn returns_custom_code(method: Method) -> Result<(), Error> {
     let dh = DummyhttpProcess::new(vec!["-c", "201"])?;
 
@@ -100,15 +81,7 @@ fn returns_custom_code(method: Method) -> Result<(), Error> {
 }
 
 /// Setting a custom header will always return that header.
-#[rstest(
-    method,
-    case::get(Method::GET),
-    case::post(Method::POST),
-    case::put(Method::PUT),
-    case::delete(Method::DELETE),
-    case::options(Method::OPTIONS),
-    case::patch(Method::PATCH)
-)]
+#[apply(http_methods)]
 fn returns_custom_headers(method: Method) -> Result<(), Error> {
     let dh = DummyhttpProcess::new(vec!["-H", "test:header"])?;
 
@@ -123,15 +96,7 @@ fn returns_custom_headers(method: Method) -> Result<(), Error> {
 }
 
 /// Setting a custom delay will delay the response making it at least that long.
-#[rstest(
-    method,
-    case::get(Method::GET),
-    case::post(Method::POST),
-    case::put(Method::PUT),
-    case::delete(Method::DELETE),
-    case::options(Method::OPTIONS),
-    case::patch(Method::PATCH),
-)]
+#[apply(http_methods)]
 fn returns_custom_delay(method: Method) -> Result<(), Error> {
     let dh = DummyhttpProcess::new(vec!["-d", "1000"])?;
 
