@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Added `--delay` to delay HTTP responses [#514](https://github.com/svenstaro/dummyhttp/pull/514) (thanks @Sebekerga)
 
 ## [1.0.3] - 2023-04-28
 - Update dependencies
