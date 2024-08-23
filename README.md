@@ -124,6 +124,11 @@ Afterwards, you can run it:
 
               [default: 0.0.0.0]
 
+      -d, --delay <DELAY>
+              Delay in milliseconds before sending the response in milliseconds
+
+              [default: 0]
+
           --print-completions <shell>
               Generate completion file for a shell
 
