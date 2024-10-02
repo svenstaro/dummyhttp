@@ -29,7 +29,7 @@ colored = "2"
 colored_json = "5"
 hyper = { version = "1" }
 lipsum = "0.9"
-rustls = { version = "0.23.12", default-features = false, features = ["ring"] }
+rustls = { version = "0.23.13", default-features = false, features = ["ring"] }
 serde_json = "1.0"
 tera = "1"
 tokio = { version = "1.40", features = ["rt-multi-thread"] }
@@ -48,8 +48,8 @@ tls = ["axum-server/tls-rustls-no-provider"]
 assert_cmd = "2.0"
 port_check = "0.2"
 predicates = "3"
-pretty_assertions = "1.2"
+pretty_assertions = "1.4"
 reqwest = { version = "0.12", features = ["blocking", "rustls-tls"], default-features = false }
-rstest = "0.22"
+rstest = "0.23"
 rstest_reuse = "0.7.0"
 url = "2.5"
