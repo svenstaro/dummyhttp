@@ -89,7 +89,7 @@ async fn print_request_response(
 
     let resp = next.run(req).await;
 
-    let time = Local::now().format("%Y-%M-%d %H:%M:%S").to_string();
+    let time = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
     let connect_line = format!(
         "{time} {peer_info} {method} {uri} {http}/{version}",
