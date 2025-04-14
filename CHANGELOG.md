@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+
+## [1.1.1] - 2025-04-14
 - Fix wrong date formatting [#531](https://github.com/svenstaro/dummyhttp/pull/531)
 
 ## [1.1.0] - 2024-08-23
@@ -71,7 +73,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Print body (#13)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/svenstaro/dummyhttp/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/svenstaro/dummyhttp/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/svenstaro/dummyhttp/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/svenstaro/dummyhttp/compare/v1.0.1...v1.0.2
