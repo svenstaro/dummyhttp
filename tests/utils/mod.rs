@@ -25,7 +25,7 @@ impl Drop for DummyhttpProcess {
 #[allow(dead_code)]
 impl DummyhttpProcess {
     /// Get a Dummyhttp instance on a free port.
-    pub fn new<I, S>(args: I) -> Result<DummyhttpProcess, Error>
+    pub fn new<I, S>(args: I) -> Result<Self, Error>
     where
         I: IntoIterator<Item = S> + Clone + std::fmt::Debug,
         S: AsRef<OsStr> + PartialEq + From<&'static str>,
@@ -56,6 +56,6 @@ impl DummyhttpProcess {
         };
         let url = format!("{proto}://localhost:{port}", proto = proto, port = port);
 
-        Ok(DummyhttpProcess { child, url })
+        Ok(Self { child, url })
     }
 }
