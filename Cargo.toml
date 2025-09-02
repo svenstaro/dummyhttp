@@ -46,7 +46,7 @@ tls = ["axum-server/tls-rustls-no-provider"]
 
 [dev-dependencies]
 assert_cmd = "2.0"
-port_check = "0.2"
+port_check = "0.3"
 predicates = "3"
 pretty_assertions = "1.2"
 reqwest = { version = "0.12", features = ["blocking", "rustls-tls"], default-features = false }
