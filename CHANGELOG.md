@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+
+## [1.1.2] - 2025-10-02
 - Fix thread panic when receiving invalid JSON [#533](https://github.com/svenstaro/dummyhttp/pull/533) (thanks @yannismate)
 
 ## [1.1.1] - 2025-04-14
@@ -74,7 +76,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Print body (#13)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/svenstaro/dummyhttp/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/svenstaro/dummyhttp/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/svenstaro/dummyhttp/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/svenstaro/dummyhttp/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/svenstaro/dummyhttp/compare/v1.0.2...v1.0.3
