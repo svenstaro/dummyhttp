@@ -127,17 +127,27 @@ async fn print_request_response(
         let req_body_text = if body.is_empty() || args.verbose < 2 {
             "".to_string()
         } else {
+            let mut body_invalid_json = false;
             let body_formatted = if let Some(content_type) = req_headers.get(CONTENT_TYPE) {
                 if content_type == "application/json" {
                     serde_json::from_str::<serde_json::Value>(&body)
                         .and_then(|loaded_json| serde_json::to_string_pretty(&loaded_json))
                         .and_then(|pretty_json| pretty_json.to_colored_json_auto())
-                        .unwrap()
+                        .unwrap_or_else(|_| {
+                            body_invalid_json = true;
+                            body.to_string()
+                        })
                 } else {
                     body.to_string()
                 }
             } else {
                 body.to_string()
+            };
+
+            let body_title = if body_invalid_json {
+                "Body (invalid JSON):"
+            } else {
+                "Body:"
             };
             let body_formatted = body_formatted
                 .lines()
@@ -147,7 +157,7 @@ async fn print_request_response(
             format!(
                 "\n{deco} {body}\n{body_formatted}",
                 deco = "│".green().bold(),
-                body = "Body:".yellow(),
+                body = body_title.yellow(),
                 body_formatted = body_formatted,
             )
         };
