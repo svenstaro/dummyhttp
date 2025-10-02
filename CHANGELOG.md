@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Fix thread panic when receiving invalid JSON [#533](https://github.com/svenstaro/dummyhttp/pull/533) (thanks @yannismate)
 
 ## [1.1.1] - 2025-04-14
 - Fix wrong date formatting [#531](https://github.com/svenstaro/dummyhttp/pull/531)
