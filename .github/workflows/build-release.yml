@@ -42,7 +42,7 @@ jobs:
           - os: ubuntu-latest
             target: riscv64gc-unknown-linux-gnu
             compress: false
-            cargo_flags: "--no-default-features"
+            cargo_flags: ""
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             compress: true
@@ -66,7 +66,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -75,7 +75,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
 
       - name: cargo build
-        uses: houseabsolute/actions-rust-cross@v0
+        uses: houseabsolute/actions-rust-cross@v1
         with:
           command: build
           args: --release --locked ${{ matrix.cargo_flags }}
@@ -94,7 +94,7 @@ jobs:
         if: ${{ matrix.compress }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.target }}
           path: target/${{ matrix.target }}/release/dummyhttp${{ env.EXE }}
@@ -139,22 +139,22 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download artifact aarch64-unknown-linux-gnu
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: aarch64-unknown-linux-gnu
           path: target/aarch64-unknown-linux-gnu/release
 
       - name: Download artifact x86_64-unknown-linux-gnu
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: x86_64-unknown-linux-gnu
           path: target/x86_64-unknown-linux-gnu/release
 
       - name: Download artifact armv7-unknown-linux-gnueabihf
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: armv7-unknown-linux-gnueabihf
           path: target/armv7-unknown-linux-gnueabihf/release
