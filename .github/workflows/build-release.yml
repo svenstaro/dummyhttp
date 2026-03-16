@@ -42,7 +42,7 @@ jobs:
           - os: ubuntu-latest
             target: riscv64gc-unknown-linux-gnu
             compress: false
-            cargo_flags: "--no-default-features"
+            cargo_flags: ""
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             compress: true
