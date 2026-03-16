@@ -86,7 +86,7 @@ jobs:
         if: startsWith(matrix.os, 'windows')
 
       - name: Compress binaries
-        uses: svenstaro/upx-action@v2
+        uses: svenstaro/upx-action@v3
         with:
           files: target/${{ matrix.target }}/release/dummyhttp${{ env.EXE }}
           args: --best --lzma
