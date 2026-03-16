@@ -1,2 +1,8 @@
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "target-feature=+crt-static"]
+
+[env]
+# Disable CPU jitter entropy in aws-lc-rs to avoid annoyances while building in
+# environments that set optimization C flags.
+# See: https://github.com/aws/aws-lc-rs/issues/899
+AWS_LC_SYS_NO_JITTER_ENTROPY = "1"
