@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Bump deps
 
 ## [1.1.2] - 2025-10-02
 - Fix thread panic when receiving invalid JSON [#533](https://github.com/svenstaro/dummyhttp/pull/533) (thanks @yannismate)
