@@ -27,6 +27,7 @@ clap_complete = "4"
 clap_mangen = "0.2"
 colored = "3"
 colored_json = "5"
+enable-ansi-support = "0.3.1"
 hyper = { version = "1" }
 lipsum = "0.9"
 rustls = { version = "0.23.37" }

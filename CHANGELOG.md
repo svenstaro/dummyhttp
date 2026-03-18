@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+- Add ANSI color support on Windows [#520](https://github.com/svenstaro/dummyhttp/issues/520)
 
 ## [1.1.3] - 2026-03-16
 - Bump deps

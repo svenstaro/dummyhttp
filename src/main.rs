@@ -252,6 +252,8 @@ async fn buffer_and_print(direction: &str, body: Body) -> Result<Bytes, (StatusC
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    enable_ansi_support::enable_ansi_support()?;
+
     let args = Args::parse();
 
     if let Some(shell) = args.print_completions {
