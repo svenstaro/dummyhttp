@@ -10,9 +10,14 @@ use axum::{
     extract::{ConnectInfo, Request},
     http::{HeaderValue, StatusCode, Uri},
     middleware::{self, Next},
-    response::{IntoResponse, Response},
+    response::{
+        sse::{Event, Sse},
+        IntoResponse, Response,
+    },
+    routing::get,
     Extension, Router,
 };
+use futures::stream;
 
 #[cfg(feature = "tls")]
 use axum_server::tls_rustls::RustlsConfig;
@@ -38,6 +43,55 @@ pub fn template_lorem(args: &HashMap<String, tera::Value>) -> tera::Result<tera:
         .and_then(|w| w.as_u64())
         .ok_or_else(|| tera::Error::from("Failed to template lorem"))?;
     Ok(tera::to_value(lipsum::lipsum(n_words as usize)).unwrap())
+}
+
+/// SSE handler that streams templated messages at configurable intervals
+async fn sse_handler(Extension(args): Extension<Args>) -> impl IntoResponse {
+    let mut tera = tera::Tera::default();
+    tera.register_function("uuid", template_uuid);
+    tera.register_function("lorem", template_lorem);
+
+    let event_name = args.sse_event.clone();
+    let interval_ms = args.sse_interval;
+    let count = args.sse_count;
+    let body_template = args.body.clone();
+    let interval_duration = Duration::from_millis(interval_ms);
+
+    let stream = stream::unfold(
+        (0u64, tera, body_template, event_name, interval_duration),
+        move |(count_so_far, mut tera, body_template, event_name, interval_duration)| async move {
+            if count > 0 && count_so_far >= count {
+                return None;
+            }
+
+            // Delay before sending each message (except the first)
+            if count_so_far > 0 {
+                sleep(interval_duration).await;
+            }
+
+            let rendered = tera
+                .render_str(&body_template, &tera::Context::new())
+                .unwrap_or_else(|_| body_template.clone());
+
+            let mut event = Event::default().data(&rendered).retry(interval_duration);
+            if let Some(ref name) = event_name {
+                event = event.event(name);
+            }
+
+            Some((
+                Ok::<_, std::convert::Infallible>(event),
+                (
+                    count_so_far + 1,
+                    tera,
+                    body_template,
+                    event_name,
+                    interval_duration,
+                ),
+            ))
+        },
+    );
+
+    Sse::new(stream)
 }
 
 /// dummyhttp only has a single response and this is it :)
@@ -270,8 +324,13 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    let app = Router::new()
-        .fallback(dummy_response)
+    let mut app = Router::new().fallback(dummy_response);
+
+    if args.sse {
+        app = app.route("/events", get(sse_handler));
+    }
+
+    app = app
         .layer(middleware::from_fn(print_request_response))
         .layer(Extension(args.clone()));
 

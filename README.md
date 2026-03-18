@@ -54,13 +54,24 @@ Running `dummyhttp -vv` results in this neat output:
 ### Return a specific header
 
     dummyhttp -b '{"Hello": "World"}' -H "content-type:application/json"
-    curl -v localhost:8080
-    # < HTTP/1.1 200 OK
-    # < content-type: application/json
-    # < date: Wed, 24 Aug 2022 00:55:35 +0200
-    # < content-length: 18
-    # <
-    # {"Hello": "World"}
+     curl -v localhost:8080
+     # < HTTP/1.1 200 OK
+     # < content-type: application/json
+     # < date: Wed, 24 Aug 2022 00:55:35 +0200
+     # < content-length: 18
+     # <
+     # {"Hello": "World"}
+
+### Server-Sent Events endpoint
+
+    dummyhttp --sse -b "Message {{ uuid() }}"
+    # Connect to http://localhost:8080/events
+
+    dummyhttp --sse --sse-interval 500 --sse-count 10 -b "Update {{ now() | date(format=\"%H:%M:%S\") }}"
+    # Sends 10 messages at 500ms intervals
+
+    dummyhttp --sse --sse-event "server-update" -b '{"status": "ok"}'
+    # Custom event type "server-update"
 
 ## How to install
 
@@ -124,10 +135,26 @@ Afterwards, you can run it:
 
               [default: 0.0.0.0]
 
-      -d, --delay <DELAY>
-              Delay in milliseconds before sending the response in milliseconds
+     -d, --delay <DELAY>
+               Delay in milliseconds before sending the response in milliseconds
 
-              [default: 0]
+               [default: 0]
+
+          --sse
+               Enable SSE endpoint at /events
+
+          --sse-interval <SSE_INTERVAL>
+               Interval in milliseconds between SSE messages
+
+               [default: 1000]
+
+          --sse-count <SSE_COUNT>
+               Number of SSE messages to send (0 = infinite)
+
+               [default: 0]
+
+          --sse-event <SSE_EVENT>
+               Custom event type name for SSE messages
 
           --print-completions <shell>
               Generate completion file for a shell
