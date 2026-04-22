@@ -73,6 +73,22 @@ pub struct Args {
     #[cfg(feature = "tls")]
     #[arg(long = "tls-key", alias = "key", requires = "tls_cert", value_hint = ValueHint::FilePath)]
     pub tls_key: Option<PathBuf>,
+
+    /// Enable SSE endpoint at /events
+    #[arg(long)]
+    pub sse: bool,
+
+    /// Interval in milliseconds between SSE messages
+    #[arg(long, default_value = "1000", requires = "sse")]
+    pub sse_interval: u64,
+
+    /// Number of SSE messages to send (0 = infinite)
+    #[arg(long, default_value = "0", requires = "sse")]
+    pub sse_count: u64,
+
+    /// Custom event type name for SSE messages
+    #[arg(long, requires = "sse")]
+    pub sse_event: Option<String>,
 }
 
 /// Checks wether an interface is valid, i.e. it can be parsed into an IP address
