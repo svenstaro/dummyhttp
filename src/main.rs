@@ -1,4 +1,4 @@
-use std::{collections::HashMap, net::SocketAddr};
+use std::net::SocketAddr;
 
 #[cfg(not(feature = "tls"))]
 use anyhow::Result;
@@ -28,16 +28,19 @@ use crate::args::Args;
 
 mod args;
 
-pub fn template_uuid(_args: &HashMap<String, tera::Value>) -> tera::Result<tera::Value> {
-    Ok(tera::to_value(uuid::Uuid::new_v4().to_string()).unwrap())
+pub fn template_now(_kwargs: tera::Kwargs, _state: &tera::State<'_>) -> tera::TeraResult<tera::Value> {
+    Ok(tera::Value::from(chrono::Utc::now().to_rfc3339()))
 }
 
-pub fn template_lorem(args: &HashMap<String, tera::Value>) -> tera::Result<tera::Value> {
-    let n_words = args
-        .get("words")
-        .and_then(|w| w.as_u64())
-        .ok_or_else(|| tera::Error::from("Failed to template lorem"))?;
-    Ok(tera::to_value(lipsum::lipsum(n_words as usize)).unwrap())
+pub fn template_uuid(_kwargs: tera::Kwargs, _state: &tera::State<'_>) -> tera::TeraResult<tera::Value> {
+    Ok(tera::Value::from(uuid::Uuid::new_v4().to_string()))
+}
+
+pub fn template_lorem(kwargs: tera::Kwargs, _state: &tera::State<'_>) -> tera::TeraResult<tera::Value> {
+    let n_words = kwargs
+        .get::<u64>("words")?
+        .ok_or_else(|| tera::Error::message("Failed to template lorem"))?;
+    Ok(tera::Value::from(lipsum::lipsum(n_words as usize)))
 }
 
 /// dummyhttp only has a single response and this is it :)
@@ -57,9 +60,10 @@ async fn dummy_response(_uri: Uri, Extension(args): Extension<Args>) -> impl Int
 
     // Render body as Tera template.
     let mut tera = tera::Tera::default();
+    tera.register_function("now", template_now);
     tera.register_function("uuid", template_uuid);
     tera.register_function("lorem", template_lorem);
-    let rendered_body = tera.render_str(&args.body, &tera::Context::new()).unwrap();
+    let rendered_body = tera.render_str(&args.body, &tera::Context::new(), false).unwrap();
 
     // Delay response.
     sleep(Duration::from_millis(args.delay)).await;
