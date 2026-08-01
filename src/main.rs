@@ -28,15 +28,24 @@ use crate::args::Args;
 
 mod args;
 
-pub fn template_now(_kwargs: tera::Kwargs, _state: &tera::State<'_>) -> tera::TeraResult<tera::Value> {
+pub fn template_now(
+    _kwargs: tera::Kwargs,
+    _state: &tera::State<'_>,
+) -> tera::TeraResult<tera::Value> {
     Ok(tera::Value::from(chrono::Utc::now().to_rfc3339()))
 }
 
-pub fn template_uuid(_kwargs: tera::Kwargs, _state: &tera::State<'_>) -> tera::TeraResult<tera::Value> {
+pub fn template_uuid(
+    _kwargs: tera::Kwargs,
+    _state: &tera::State<'_>,
+) -> tera::TeraResult<tera::Value> {
     Ok(tera::Value::from(uuid::Uuid::new_v4().to_string()))
 }
 
-pub fn template_lorem(kwargs: tera::Kwargs, _state: &tera::State<'_>) -> tera::TeraResult<tera::Value> {
+pub fn template_lorem(
+    kwargs: tera::Kwargs,
+    _state: &tera::State<'_>,
+) -> tera::TeraResult<tera::Value> {
     let n_words = kwargs
         .get::<u64>("words")?
         .ok_or_else(|| tera::Error::message("Failed to template lorem"))?;
@@ -63,7 +72,9 @@ async fn dummy_response(_uri: Uri, Extension(args): Extension<Args>) -> impl Int
     tera.register_function("now", template_now);
     tera.register_function("uuid", template_uuid);
     tera.register_function("lorem", template_lorem);
-    let rendered_body = tera.render_str(&args.body, &tera::Context::new(), false).unwrap();
+    let rendered_body = tera
+        .render_str(&args.body, &tera::Context::new(), false)
+        .unwrap();
 
     // Delay response.
     sleep(Duration::from_millis(args.delay)).await;
