@@ -52,9 +52,13 @@ pub struct Args {
     )]
     pub interface: IpAddr,
 
-    /// Delay in milliseconds before sending the response in milliseconds
+    /// Delay in milliseconds before sending the response
     #[arg(short, long, default_value = "0")]
     pub delay: u64,
+
+    /// Maximum random delay in milliseconds before sending the response
+    #[arg(short, long, default_value = "0")]
+    pub random_delay: u64,
 
     /// Generate completion file for a shell
     #[arg(long = "print-completions", value_name = "shell")]

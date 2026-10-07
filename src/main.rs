@@ -77,7 +77,13 @@ async fn dummy_response(_uri: Uri, Extension(args): Extension<Args>) -> impl Int
         .unwrap();
 
     // Delay response.
-    sleep(Duration::from_millis(args.delay)).await;
+    if args.delay > 0 {
+        sleep(Duration::from_millis(args.delay)).await;
+    }
+    if args.random_delay > 0 {
+        let random_delay = rand::random_range(0..args.random_delay);
+        sleep(Duration::from_millis(random_delay)).await;
+    }
 
     (status_code, headers, rendered_body)
 }
