@@ -84,12 +84,10 @@ fn parse_interface(src: &str) -> Result<IpAddr, std::net::AddrParseError> {
 ///
 /// Headers are expected to be in format "key:value".
 fn parse_header(header: &str) -> Result<HeaderMap, String> {
-    let header: Vec<&str> = header.split(':').collect();
-    if header.len() != 2 {
-        return Err("Wrong header format (see --help for format)".to_string());
-    }
-
-    let (header_name, header_value) = (header[0], header[1]);
+    let [header_name, header_value] = header.split_once(':')
+        .map(|(n, v)| [n, v].map(str::trim))
+        .filter(|nv| nv.iter().all(|s| !s.is_empty()))
+        .ok_or("Wrong header format (see --help for format)")?;
 
     let hn = HeaderName::from_lowercase(header_name.to_lowercase().as_bytes())
         .map_err(|e| e.to_string())?;
